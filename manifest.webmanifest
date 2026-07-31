@@ -1,0 +1,14 @@
+{
+  "name": "The Weave — Christelle's day, sorted",
+  "short_name": "The Weave",
+  "description": "Daily life dashboard with a vocabulary builder, updated by a brain-dump chat with Claude.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#1B1713",
+  "theme_color": "#1B1713",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

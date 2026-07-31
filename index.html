@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Weave</title>
+<meta name="description" content="Christelle's day, sorted. Updated by a daily brain-dump chat with Claude.">
+<meta name="theme-color" content="#1B1713">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1B1713;
+    --card: #241F19;
+    --card-2: #2C261E;
+    --line: #3B3328;
+    --line-soft: rgba(167, 154, 133, 0.16);
+    --text: #EFE7D8;
+    --muted: #A79A85;
+    --faint: #6E6353;
+    --sage: #A8BD8F;
+    --moss: #7E9B6E;
+    --amber: #D9A45B;
+    --clay: #C97B5D;
+    --rust: #A8543A;
+    --sand: #D8C7A5;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 6px 18px rgba(0, 0, 0, 0.18);
+    --display: "Fraunces", Georgia, serif;
+    --body: system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+    --r: 14px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { background: var(--bg); }
+
+  body {
+    margin: 0;
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--text);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .wrap { max-width: 640px; margin: 0 auto; padding: 26px 18px 40px; }
+
+  /* ---------- header ---------- */
+  header.top { margin: 0 0 22px; }
+  .topline { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .wordmark {
+    font-family: var(--display);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    color: var(--sand);
+    margin: 0;
+  }
+  .datebar { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .greeting {
+    font-family: var(--display);
+    font-size: 30px;
+    font-weight: 500;
+    line-height: 1.2;
+    margin: 12px 0 0;
+    min-height: 1.2em;
+  }
+  .greeting .hola { color: var(--sage); transition: opacity 0.6s; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 12px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .chip b { color: var(--amber); font-weight: 600; }
+  .chip.sync b { color: var(--sage); }
+  .chip.sync.off b { color: var(--faint); }
+  .chip.sync.err b { color: var(--clay); }
+
+  /* ---------- layout ---------- */
+  .grid { display: grid; gap: 16px; }
+  @media (min-width: 980px) {
+    .wrap { max-width: 1020px; }
+    .grid { grid-template-columns: 1fr 1fr; align-items: start; }
+    .col { display: grid; gap: 16px; }
+  }
+
+  section.card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    box-shadow: var(--shadow);
+    padding: 18px;
+  }
+  .eyebrow { display: flex; align-items: baseline; gap: 9px; margin-bottom: 2px; }
+  .eyebrow h2 {
+    font-family: var(--display);
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    margin: 0;
+    color: var(--text);
+  }
+  .eyebrow .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; align-self: center; }
+  .eyebrow .count { margin-left: auto; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .sub { color: var(--muted); font-size: 13.5px; margin: 2px 0 12px; }
+
+  .s-today  .dot { background: var(--amber); }
+  .s-vocab  .dot { background: var(--sage); }
+  .s-loops  .dot { background: var(--clay); }
+  .s-wins   .dot { background: var(--amber); }
+  .s-dump   .dot { background: var(--moss); }
+  .s-cal    .dot { background: var(--sand); }
+  .s-want   .dot { background: var(--rust); }
+  .s-proj   .dot { background: var(--sand); }
+  .s-quest  .dot { background: var(--moss); }
+  .s-weave  .dot { background: linear-gradient(135deg, var(--sage), var(--amber), var(--clay)); }
+
+  /* ---------- lists ---------- */
+  ul.items { list-style: none; margin: 0; padding: 0; }
+  ul.items li {
+    display: flex;
+    gap: 11px;
+    align-items: flex-start;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  ul.items li:last-child { border-bottom: 0; }
+  ul.items li .txt { flex: 1; font-size: 15px; }
+
+  .check {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 21px; height: 21px;
+    min-width: 21px;
+    margin: 1px 0 0;
+    background: var(--bg);
+    border: 1.5px solid var(--faint);
+    border-radius: 7px;
+    cursor: pointer;
+    position: relative;
+    flex: none;
+  }
+  .check:checked { border-color: var(--sage); background: var(--sage); }
+  .check:checked::after {
+    content: "";
+    position: absolute; inset: 4px;
+    background: var(--bg);
+    clip-path: polygon(14% 44%, 0 61%, 40% 100%, 100% 16%, 82% 0, 39% 66%);
+  }
+  li.done .txt { color: var(--faint); text-decoration: line-through; }
+
+  .s-loops li { padding-left: 11px; border-left: 3px solid rgba(201, 123, 93, 0.45); border-radius: 2px; }
+  .s-loops li.w2 { border-left-color: rgba(201, 123, 93, 0.75); }
+  .s-loops li.w3 { border-left-color: var(--clay); border-left-width: 4px; }
+
+  /* ---------- buttons & inputs ---------- */
+  .btnrow { display: flex; flex-wrap: wrap; gap: 9px; }
+  button.b {
+    font-family: var(--body);
+    font-size: 14px;
+    font-weight: 600;
+    color: #221B12;
+    background: var(--amber);
+    border: 0;
+    border-radius: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: filter 0.15s;
+  }
+  button.b:hover { filter: brightness(1.06); }
+  button.b:active { filter: brightness(0.94); }
+  button.b.green { background: var(--sage); }
+  button.b.ghost { background: var(--card-2); color: var(--text); border: 1px solid var(--line); font-weight: 500; }
+  button.b:disabled { opacity: 0.45; cursor: default; }
+  .todaymeta { font-family: var(--mono); font-size: 12px; color: var(--muted); margin: 12px 0 0; }
+
+  input.field {
+    font-family: var(--body);
+    font-size: 15px;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    width: 100%;
+  }
+  input.field::placeholder { color: var(--faint); }
+
+  .jotrow { display: flex; gap: 8px; margin-top: 12px; }
+  .jotrow input { flex: 1; }
+  .xbtn { background: none; border: 0; color: var(--faint); font-family: var(--mono); font-size: 14px; cursor: pointer; padding: 2px 5px; }
+  .xbtn:hover { color: var(--clay); }
+  li.jot .txt::before { content: "jot · "; font-family: var(--mono); font-size: 11px; color: var(--moss); }
+
+  /* ---------- vocabulary ---------- */
+  .v-add { display: grid; gap: 8px; margin: 0 0 4px; }
+  .v-add .row2 { display: flex; gap: 8px; }
+  .v-add .row2 input:first-child { flex: 1; }
+  .v-stats { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0; }
+  ul.v-list { list-style: none; margin: 6px 0 0; padding: 0; }
+  ul.v-list li { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line-soft); }
+  ul.v-list li:last-child { border-bottom: 0; }
+  .v-main { flex: 1; min-width: 0; }
+  .v-word { font-weight: 600; font-size: 15.5px; }
+  .v-due { font-family: var(--mono); font-size: 11px; color: var(--amber); margin-left: 8px; }
+  .v-def { display: block; color: var(--muted); font-size: 13.5px; margin-top: 1px; }
+  .v-note { display: block; color: var(--faint); font-size: 12.5px; font-style: italic; margin-top: 1px; }
+  .v-side { display: flex; align-items: center; gap: 10px; flex: none; padding-top: 3px; }
+  .boxdots { display: flex; gap: 3px; }
+  .boxdots i { width: 6px; height: 6px; border-radius: 50%; background: var(--line); }
+  .boxdots i.on { background: var(--sage); }
+  .v-more { margin-top: 10px; }
+
+  /* ---------- modals ---------- */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(15, 12, 9, 0.78);
+    display: flex; align-items: center; justify-content: center;
+    padding: 18px;
+    z-index: 50;
+  }
+  .overlay[hidden] { display: none; }
+  .modal {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    width: 100%;
+    max-width: 460px;
+    max-height: 88vh;
+    overflow-y: auto;
+    padding: 20px;
+  }
+  .modal h3 { font-family: var(--display); font-weight: 600; font-size: 18px; margin: 0 0 4px; }
+  .modal .close { float: right; }
+
+  /* game */
+  .g-bar { height: 5px; background: var(--card-2); border-radius: 99px; overflow: hidden; margin: 12px 0 18px; }
+  .g-bar i { display: block; height: 100%; background: var(--sage); border-radius: 99px; transition: width 0.3s; width: 0; }
+  .g-prompt-label { font-family: var(--mono); font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin: 0 0 6px; }
+  .g-prompt { font-size: 20px; font-weight: 600; margin: 0 0 16px; }
+  .g-prompt.def { font-family: var(--display); font-weight: 500; font-size: 18px; line-height: 1.45; }
+  .g-opts { display: grid; gap: 8px; }
+  .g-opt {
+    font-family: var(--body);
+    font-size: 15px;
+    text-align: left;
+    color: var(--text);
+    background: var(--card-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+  }
+  .g-opt:not(:disabled):hover { border-color: var(--faint); }
+  .g-opt.right { border-color: var(--sage); background: rgba(168, 189, 143, 0.14); }
+  .g-opt.wrong { border-color: var(--clay); background: rgba(201, 123, 93, 0.14); }
+  .g-opt:disabled { cursor: default; }
+  .g-feedback { min-height: 22px; font-family: var(--mono); font-size: 13px; margin: 12px 0 0; }
+  .g-feedback.ok { color: var(--sage); }
+  .g-feedback.no { color: var(--clay); }
+  .g-next { margin-top: 14px; }
+  .g-end { text-align: center; padding: 12px 0 4px; }
+  .g-end .big { font-family: var(--display); font-size: 40px; font-weight: 600; color: var(--sage); margin: 6px 0; }
+  .g-reveal { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin: 0 0 14px; color: var(--muted); font-size: 15px; }
+
+  /* settings */
+  .set-p { font-size: 13.5px; color: var(--muted); margin: 8px 0; }
+  .set-p code { font-family: var(--mono); font-size: 12px; color: var(--sand); }
+  .set-row { display: flex; gap: 8px; margin: 12px 0; }
+  .set-row input { flex: 1; }
+
+  /* ---------- calendar ---------- */
+  .cal-head { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--mono); font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  table.cal { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 13px; }
+  table.cal th { color: var(--faint); font-weight: 400; padding: 4px 0; font-size: 11px; }
+  table.cal td { text-align: center; padding: 6px 0; color: var(--text); border-radius: 8px; }
+  table.cal td.dim { color: var(--faint); }
+  table.cal td.today { outline: 1.5px solid var(--amber); outline-offset: -3px; font-weight: 600; }
+  table.cal td .dot { display: block; width: 5px; height: 5px; border-radius: 50%; margin: 2px auto 0; background: var(--amber); }
+  table.cal td .dot.rec { background: var(--moss); opacity: 0.8; }
+  .nextup { margin-top: 12px; }
+  .nextup .nu { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--line-soft); font-size: 14.5px; }
+  .nextup .nu:last-child { border-bottom: 0; }
+  .nextup .nu .d { font-family: var(--mono); font-size: 12px; color: var(--amber); min-width: 76px; padding-top: 2px; }
+
+  /* ---------- weave ---------- */
+  .weavegrid { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 14px); gap: 3px; justify-content: start; overflow-x: auto; padding-bottom: 4px; }
+  .cell { width: 14px; height: 14px; background: var(--bg); border: 1px solid var(--line-soft); border-radius: 3px; display: grid; overflow: hidden; }
+  .cell.today { border-color: var(--amber); }
+  .cell span { display: block; }
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .legend i { display: inline-block; width: 9px; height: 9px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+
+  .empty { color: var(--faint); font-size: 14px; padding: 8px 0; }
+
+  footer.note { margin-top: 28px; color: var(--faint); font-size: 12.5px; }
+  footer.note code { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+
+  a { color: var(--sage); }
+  :focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .greeting .hola { transition: none; }
+    .g-bar i { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="topline">
+      <p class="wordmark">The Weave</p>
+      <div class="datebar" id="datebar"></div>
+    </div>
+    <h1 class="greeting"><span class="hola" id="hola">Buenos días</span>, Christelle.</h1>
+    <div class="chips">
+      <span class="chip" id="streakchip" hidden><b id="streakN">0</b><span id="streakLbl">day streak</span></span>
+      <span class="chip sync off" id="syncchip"><b>●</b><span id="syncLbl">local only</span></span>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="col">
+
+      <section class="card s-today">
+        <div class="eyebrow"><span class="dot"></span><h2>Today</h2></div>
+        <p class="sub">Talk it out — quick wins, loops, ideas, whatever. Claude sorts it and reweaves this page.</p>
+        <div class="btnrow">
+          <button class="b" id="checkinBtn">Check in with Claude</button>
+          <button class="b ghost" id="copyBtn">Copy check-in</button>
+          <button class="b ghost" id="setBtn">Sync</button>
+        </div>
+        <p class="todaymeta" id="todaymeta"></p>
+      </section>
+
+      <section class="card s-vocab">
+        <div class="eyebrow"><span class="dot"></span><h2>Vocabulary</h2><span class="count" id="vCount"></span></div>
+        <p class="sub" id="vSub">Words you caught in the wild. Add them here, then play the daily round to make them stick.</p>
+        <div class="v-add">
+          <div class="row2">
+            <input class="field" id="vWord" type="text" placeholder="New word…" autocapitalize="none" autocorrect="off" aria-label="New word">
+            <button class="b green" id="vAddBtn">Add</button>
+          </div>
+          <input class="field" id="vDef" type="text" placeholder="Definition (games work best with one)" aria-label="Definition">
+          <input class="field" id="vNote" type="text" placeholder="Where you saw it (optional)" aria-label="Where you saw it">
+        </div>
+        <div class="v-stats">
+          <button class="b" id="vPlayBtn">Play today’s round</button>
+          <span class="chip" id="vStreak" hidden><b id="vStreakN">0</b><span>day review streak</span></span>
+        </div>
+        <ul class="v-list" id="vList"></ul>
+        <div class="v-more"><button class="b ghost" id="vMoreBtn" hidden>Show all</button></div>
+      </section>
+
+      <section class="card s-loops">
+        <div class="eyebrow"><span class="dot"></span><h2>Open loops</h2><span class="count" id="loopsCount"></span></div>
+        <p class="sub">The stuff humming in the background. Thicker edge, heavier loop. Close one, feel lighter.</p>
+        <ul class="items" id="loopsList"></ul>
+      </section>
+
+      <section class="card s-wins">
+        <div class="eyebrow"><span class="dot"></span><h2>Quick wins</h2><span class="count" id="winsCount"></span></div>
+        <p class="sub">Small, done fast.</p>
+        <ul class="items" id="winsList"></ul>
+      </section>
+
+      <section class="card s-dump">
+        <div class="eyebrow"><span class="dot"></span><h2>Brain dump</h2></div>
+        <p class="sub">Yesterday's head, on paper. Jot anything new — it rides along on your next check-in.</p>
+        <ul class="items" id="dumpList"></ul>
+        <div class="jotrow">
+          <input class="field" id="jotInput" type="text" placeholder="Jot a thought…" aria-label="Jot a thought">
+          <button class="b ghost" id="jotBtn">Jot</button>
+        </div>
+      </section>
+
+    </div>
+    <div class="col">
+
+      <section class="card s-cal">
+        <div class="eyebrow"><span class="dot"></span><h2>Calendar</h2></div>
+        <div class="cal-head"><span id="calMonth"></span><span>amber = event · green = routine</span></div>
+        <table class="cal" id="calTable" aria-label="This month"></table>
+        <div class="nextup" id="nextUp"></div>
+      </section>
+
+      <section class="card s-want">
+        <div class="eyebrow"><span class="dot"></span><h2>I'd like to…</h2></div>
+        <ul class="items" id="wantList"></ul>
+      </section>
+
+      <section class="card s-proj">
+        <div class="eyebrow"><span class="dot"></span><h2>Cool projects</h2></div>
+        <ul class="items" id="projList"></ul>
+      </section>
+
+      <section class="card s-quest">
+        <div class="eyebrow"><span class="dot"></span><h2>Questions to sit with</h2></div>
+        <p class="sub">Bus-commute material. Sit with one, don't rush it.</p>
+        <ul class="items" id="questList"></ul>
+      </section>
+
+      <section class="card s-weave">
+        <div class="eyebrow"><span class="dot"></span><h2>The Weave</h2></div>
+        <p class="sub">One stitch per day you show up. The colors are what you did.</p>
+        <div class="weavegrid" id="weaveGrid"></div>
+        <div class="legend">
+          <span><i style="background:var(--moss)"></i>brain dump</span>
+          <span><i style="background:var(--amber)"></i>quick win</span>
+          <span><i style="background:var(--clay)"></i>loop closed</span>
+          <span><i style="background:var(--rust)"></i>did a want-to</span>
+          <span><i style="background:var(--sand)"></i>project time</span>
+          <span><i style="background:var(--sage)"></i>vocab round</span>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <footer class="note">
+    <p>With sync on, everything you do here lands straight in <code>data.json</code> on GitHub — same page on every device. Last woven: <span id="lastUpdated">—</span>.</p>
+  </footer>
+</div>
+
+<!-- vocab game -->
+<div class="overlay" id="gameOverlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Daily vocabulary round">
+    <button class="b ghost close" id="gClose">✕</button>
+    <h3 id="gTitle">Today's round</h3>
+    <div class="g-bar"><i id="gBar"></i></div>
+    <div id="gBody"></div>
+  </div>
+</div>
+
+<!-- sync settings -->
+<div class="overlay" id="setOverlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Sync settings">
+    <button class="b ghost close" id="setClose">✕</button>
+    <h3>Sync</h3>
+    <p class="set-p">Paste a GitHub token and this device reads &amp; writes <code>data.json</code> in the repo directly — checkboxes, jots-to-come, and every vocab word or game result sync everywhere, instantly.</p>
+    <p class="set-p"><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Create a fine-grained token</a>: repository access → <b>only</b> this repo → permissions → Contents: <b>read &amp; write</b>. Nothing else.</p>
+    <div class="set-row">
+      <input class="field" id="tokenInput" type="password" placeholder="github_pat_…" autocomplete="off" aria-label="GitHub token">
+    </div>
+    <div class="btnrow">
+      <button class="b" id="tokenSave">Save on this device</button>
+      <button class="b ghost" id="tokenClear">Forget token</button>
+    </div>
+    <p class="set-p" id="tokenStatus"></p>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- config ----------
+  var OWNER = "chrcha1", REPO = "life", BRANCH = "main";
+  var API = "https://api.github.com/repos/" + OWNER + "/" + REPO + "/contents/data.json";
+  var THREADS = {
+    teal: "#7E9B6E",  moss: "#7E9B6E",
+    gold: "#D9A45B",  amber: "#D9A45B",
+    pink: "#C97B5D",  clay: "#C97B5D",
+    orange: "#A8543A", rust: "#A8543A",
+    violet: "#D8C7A5", sand: "#D8C7A5",
+    sage: "#A8BD8F",  vocab: "#A8BD8F"
+  };
+  var INTERVALS = [1, 2, 4, 7, 14]; // days until next review, per box 1..5
+  var LS_CHECKS = "weave.checks.v1";
+  var LS_JOTS = "weave.jots.v1";
+  var LS_OPS = "weave.ops.v1";
+  var LS_TOKEN = "weave.token.v1";
+  var DATA = null;
+  var REMOTE_SHA = null;
+  var vShowAll = false;
+
+  // ---------- helpers ----------
+  function $(id) { return document.getElementById(id); }
+  function pad(n) { return String(n).padStart(2, "0"); }
+  function iso(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+  function todayISO() { return iso(new Date()); }
+  function addDaysISO(dateStr, n) {
+    var d = new Date(dateStr + "T12:00:00");
+    d.setDate(d.getDate() + n);
+    return iso(d);
+  }
+  function load(key, fallback) {
+    try { return JSON.parse(localStorage.getItem(key)) || fallback; } catch (e) { return fallback; }
+  }
+  function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {} }
+  function uid(prefix) { return prefix + "-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function token() { try { return localStorage.getItem(LS_TOKEN) || ""; } catch (e) { return ""; } }
+
+  // seeded rng so the daily round is the same all day on every device
+  function seedFrom(str) {
+    var h = 2166136261;
+    for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  }
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function shuffled(arr, rng) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(rng() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
+  function vocab() {
+    if (!DATA.vocab) DATA.vocab = { words: [], log: [] };
+    if (!DATA.vocab.words) DATA.vocab.words = [];
+    if (!DATA.vocab.log) DATA.vocab.log = [];
+    return DATA.vocab;
+  }
+  function dueWords() {
+    var t = todayISO();
+    return vocab().words.filter(function (w) { return !w.due || w.due <= t; });
+  }
+
+  // ---------- ops: every mutation is an op, applied locally + replayed onto remote ----------
+  function applyOp(data, op) {
+    var i, w;
+    if (op.type === "check") {
+      var all = [].concat(data.quickWins || [], data.openLoops || []);
+      for (i = 0; i < all.length; i++) {
+        if (all[i].id === op.id) {
+          all[i].done = !!op.done;
+          if (op.done) all[i].doneAt = op.date; else delete all[i].doneAt;
+        }
+      }
+    } else if (op.type === "addWord") {
+      if (!data.vocab) data.vocab = { words: [], log: [] };
+      var exists = data.vocab.words.some(function (x) { return x.id === op.word.id; });
+      if (!exists) data.vocab.words.push(JSON.parse(JSON.stringify(op.word)));
+    } else if (op.type === "delWord") {
+      if (data.vocab && data.vocab.words) {
+        data.vocab.words = data.vocab.words.filter(function (x) { return x.id !== op.id; });
+      }
+    } else if (op.type === "result") {
+      if (!data.vocab) return;
+      for (i = 0; i < data.vocab.words.length; i++) {
+        w = data.vocab.words[i];
+        if (w.id === op.id) {
+          w.seen = (w.seen || 0) + 1;
+          if (op.correct) { w.right = (w.right || 0) + 1; w.box = Math.min(5, (w.box || 1) + 1); }
+          else { w.box = 1; }
+          w.due = addDaysISO(op.date, INTERVALS[w.box - 1]);
+        }
+      }
+    } else if (op.type === "log") {
+      if (!data.vocab) data.vocab = { words: [], log: [] };
+      if (!data.vocab.log) data.vocab.log = [];
+      var found = false;
+      for (i = 0; i < data.vocab.log.length; i++) {
+        if (data.vocab.log[i].sid === op.sid) {
+          data.vocab.log[i] = { sid: op.sid, date: op.date, asked: op.asked, right: op.right };
+          found = true;
+        }
+      }
+      if (!found) data.vocab.log.push({ sid: op.sid, date: op.date, asked: op.asked, right: op.right });
+    }
+  }
+  function pushOp(op) {
+    applyOp(DATA, op);
+    var ops = load(LS_OPS, []);
+    ops.push(op);
+    save(LS_OPS, ops);
+    scheduleSync();
+  }
+
+  // ---------- github sync ----------
+  function b64encodeUtf8(str) {
+    var bytes = new TextEncoder().encode(str);
+    var bin = "";
+    for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    return btoa(bin);
+  }
+  function b64decodeUtf8(b64) {
+    var bin = atob(b64.replace(/\n/g, ""));
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder().decode(bytes);
+  }
+  function apiHeaders() {
+    var h = { "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" };
+    if (token()) h["Authorization"] = "Bearer " + token();
+    return h;
+  }
+  function apiFetchData() {
+    return fetch(API + "?ref=" + BRANCH + "&t=" + Date.now(), { headers: apiHeaders() })
+      .then(function (r) { if (!r.ok) throw new Error("read " + r.status); return r.json(); })
+      .then(function (j) { return { json: JSON.parse(b64decodeUtf8(j.content)), sha: j.sha }; });
+  }
+
+  function setSync(state, label) {
+    var chip = $("syncchip");
+    chip.className = "chip sync" + (state === "on" ? "" : " " + state);
+    $("syncLbl").textContent = label;
+  }
+
+  var syncTimer = null, syncing = false;
+  function scheduleSync() {
+    renderTodayMeta();
+    if (!token()) { setSync("off", "local only — tap Sync"); return; }
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(syncNow, 1200);
+  }
+  function syncNow(attempt) {
+    var ops = load(LS_OPS, []);
+    if (!token()) return Promise.resolve();
+    if (syncing) { scheduleSync(); return Promise.resolve(); }
+    if (!ops.length) { return pullFresh(); }
+    syncing = true;
+    setSync("on", "syncing…");
+    return apiFetchData()
+      .then(function (remote) {
+        var base = remote.json;
+        ops.forEach(function (op) { applyOp(base, op); });
+        if (!base.meta) base.meta = {};
+        base.meta.synced = new Date().toISOString();
+        return fetch(API, {
+          method: "PUT",
+          headers: apiHeaders(),
+          body: JSON.stringify({
+            message: "app sync: " + ops.length + " change" + (ops.length === 1 ? "" : "s"),
+            content: b64encodeUtf8(JSON.stringify(base, null, 2) + "\n"),
+            sha: remote.sha,
+            branch: BRANCH
+          })
+        }).then(function (r) {
+          if (!r.ok) throw new Error("write " + r.status);
+          return r.json();
+        }).then(function (res) {
+          REMOTE_SHA = res.content && res.content.sha;
+          // drop only the ops that made it into this write
+          var left = load(LS_OPS, []).slice(ops.length);
+          save(LS_OPS, left);
+          DATA = base;
+          left.forEach(function (op) { applyOp(DATA, op); });
+          renderAll();
+          setSync("on", "synced " + new Date().toTimeString().slice(0, 5));
+          if (left.length) scheduleSync();
+        });
+      })
+      .catch(function (err) {
+        if (!attempt && /write (409|422)/.test(String(err.message))) {
+          syncing = false;
+          return syncNow(1); // someone else wrote first — refetch and replay once
+        }
+        setSync("err", "sync failed — will retry");
+        clearTimeout(syncTimer);
+        syncTimer = setTimeout(syncNow, 20000);
+      })
+      .finally(function () { syncing = false; });
+  }
+  function pullFresh() {
+    if (!token()) return Promise.resolve();
+    return apiFetchData().then(function (remote) {
+      REMOTE_SHA = remote.sha;
+      DATA = remote.json;
+      load(LS_OPS, []).forEach(function (op) { applyOp(DATA, op); });
+      renderAll();
+      setSync("on", "synced " + new Date().toTimeString().slice(0, 5));
+    }).catch(function () { setSync("err", "offline — using cached"); });
+  }
+
+  // ---------- header ----------
+  function renderHeader() {
+    var now = new Date();
+    $("datebar").textContent = now.toLocaleDateString("en-US", { weekday: "short", month: "long", day: "numeric" });
+    var h = now.getHours();
+    var slot = h < 12 ? 0 : h < 18 ? 1 : 2;
+    var greet = [
+      ["Buenos días", "Bonjour", "Good morning"],
+      ["Buenas tardes", "Bon après-midi", "Good afternoon"],
+      ["Buenas noches", "Bonsoir", "Good evening"]
+    ][slot];
+    var i = 0;
+    var el = $("hola");
+    el.textContent = greet[0];
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setInterval(function () {
+        el.style.opacity = 0;
+        setTimeout(function () {
+          i = (i + 1) % greet.length;
+          el.textContent = greet[i];
+          el.style.opacity = 1;
+        }, 600);
+      }, 4200);
+    }
+  }
+
+  // ---------- generic lists ----------
+  function isDone(item) {
+    var checks = load(LS_CHECKS, {});
+    return !!(item.done || checks[item.id]);
+  }
+  function renderList(listEl, items, opts) {
+    listEl.innerHTML = "";
+    if (!items || !items.length) {
+      var em = document.createElement("li");
+      em.className = "empty";
+      em.textContent = opts.emptyText || "Nothing here — tell Claude what belongs.";
+      listEl.appendChild(em);
+      return;
+    }
+    items.forEach(function (item) {
+      var li = document.createElement("li");
+      if (opts.weight && item.weight >= 2) li.classList.add("w" + Math.min(item.weight, 3));
+      if (opts.checkable) {
+        var cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.className = "check";
+        cb.checked = isDone(item);
+        cb.setAttribute("aria-label", item.text);
+        cb.addEventListener("change", function () {
+          var checks = load(LS_CHECKS, {});
+          if (cb.checked) checks[item.id] = true; else delete checks[item.id];
+          save(LS_CHECKS, checks);
+          pushOp({ type: "check", id: item.id, done: cb.checked, date: todayISO() });
+          li.classList.toggle("done", cb.checked);
+          renderCounts();
+        });
+        li.appendChild(cb);
+        if (isDone(item)) li.classList.add("done");
+      }
+      var span = document.createElement("span");
+      span.className = "txt";
+      span.textContent = item.text;
+      li.appendChild(span);
+      listEl.appendChild(li);
+    });
+  }
+  function renderCounts() {
+    var doneW = (DATA.quickWins || []).filter(isDone).length;
+    var doneL = (DATA.openLoops || []).filter(isDone).length;
+    $("winsCount").textContent = doneW + "/" + (DATA.quickWins || []).length;
+    $("loopsCount").textContent = ((DATA.openLoops || []).length - doneL) + " open";
+  }
+
+  // ---------- brain dump + jots ----------
+  function renderDump() {
+    var listEl = $("dumpList");
+    listEl.innerHTML = "";
+    (DATA.brainDump || []).forEach(function (item) {
+      var li = document.createElement("li");
+      var span = document.createElement("span");
+      span.className = "txt";
+      span.textContent = item.text;
+      li.appendChild(span);
+      listEl.appendChild(li);
+    });
+    load(LS_JOTS, []).forEach(function (jot, idx) {
+      var li = document.createElement("li");
+      li.className = "jot";
+      var span = document.createElement("span");
+      span.className = "txt";
+      span.textContent = jot.t;
+      var del = document.createElement("button");
+      del.className = "xbtn";
+      del.textContent = "✕";
+      del.setAttribute("aria-label", "Delete jot");
+      del.addEventListener("click", function () {
+        var jots = load(LS_JOTS, []);
+        jots.splice(idx, 1);
+        save(LS_JOTS, jots);
+        renderDump();
+        renderTodayMeta();
+      });
+      li.appendChild(span);
+      li.appendChild(del);
+      listEl.appendChild(li);
+    });
+    if (!listEl.children.length) {
+      var em = document.createElement("li");
+      em.className = "empty";
+      em.textContent = "Empty head. Enjoy it, or jot something.";
+      listEl.appendChild(em);
+    }
+  }
+  function addJot() {
+    var v = $("jotInput").value.trim();
+    if (!v) return;
+    var jots = load(LS_JOTS, []);
+    jots.push({ t: v, ts: Date.now() });
+    save(LS_JOTS, jots);
+    $("jotInput").value = "";
+    renderDump();
+    renderTodayMeta();
+  }
+  $("jotBtn").addEventListener("click", addJot);
+  $("jotInput").addEventListener("keydown", function (e) { if (e.key === "Enter") addJot(); });
+
+  // ---------- check-in ----------
+  function doneToday() {
+    var t = todayISO();
+    var checks = load(LS_CHECKS, {});
+    var all = [].concat(DATA.quickWins || [], DATA.openLoops || []);
+    return all.filter(function (i) { return (checks[i.id] && !i.done) || i.doneAt === t; })
+      .map(function (i) { return i.text; });
+  }
+  function checkinText() {
+    var doneTxt = doneToday();
+    var jots = load(LS_JOTS, []).map(function (j) { return j.t; });
+    var dataUrl = "https://raw.githubusercontent.com/" + OWNER + "/" + REPO + "/" + BRANCH + "/data.json";
+    var msg = "Daily check-in for my dashboard (The Weave). ";
+    msg += "1) Ask me for today's brain dump — I'll talk it out. ";
+    msg += "2) Ask what else moved. Already checked off today: " + (doneTxt.length ? doneTxt.join("; ") : "nothing yet") + ". ";
+    msg += "New jots: " + (jots.length ? jots.join("; ") : "none") + ". ";
+    msg += "3) Then fetch " + dataUrl + ", fold everything in — clear done items, keep IDs stable, add today's weave row with the right threads — and give me the complete updated data.json to commit. ";
+    msg += "IMPORTANT: the \"vocab\" section (words, boxes, due dates, log) is managed by the app itself — copy it through byte-for-byte unless I explicitly ask to change a word.";
+    return msg;
+  }
+  $("checkinBtn").addEventListener("click", function () {
+    window.open("https://claude.ai/new?q=" + encodeURIComponent(checkinText()), "_blank");
+  });
+  $("copyBtn").addEventListener("click", function () {
+    navigator.clipboard.writeText(checkinText()).then(function () {
+      $("copyBtn").textContent = "Copied";
+      setTimeout(function () { $("copyBtn").textContent = "Copy check-in"; }, 1600);
+    });
+  });
+  function renderTodayMeta() {
+    var n = doneToday().length;
+    var j = load(LS_JOTS, []).length;
+    var pend = load(LS_OPS, []).length;
+    var msg = "today: " + n + " checked · " + j + " jot" + (j === 1 ? "" : "s");
+    if (pend && !token()) msg += " · " + pend + " change" + (pend === 1 ? "" : "s") + " waiting for sync";
+    $("todaymeta").textContent = msg;
+  }
+
+  // ---------- vocabulary ----------
+  function addWord() {
+    var word = $("vWord").value.trim();
+    if (!word) return;
+    var t = todayISO();
+    var w = {
+      id: uid("v"),
+      word: word,
+      def: $("vDef").value.trim(),
+      note: $("vNote").value.trim(),
+      added: t,
+      box: 1,
+      due: t, // brand-new words join today's round immediately
+      seen: 0,
+      right: 0
+    };
+    pushOp({ type: "addWord", word: w });
+    $("vWord").value = ""; $("vDef").value = ""; $("vNote").value = "";
+    $("vWord").focus();
+    renderVocab();
+  }
+  $("vAddBtn").addEventListener("click", addWord);
+  $("vNote").addEventListener("keydown", function (e) { if (e.key === "Enter") addWord(); });
+  $("vDef").addEventListener("keydown", function (e) { if (e.key === "Enter") addWord(); });
+  $("vWord").addEventListener("keydown", function (e) { if (e.key === "Enter") addWord(); });
+  $("vMoreBtn").addEventListener("click", function () { vShowAll = !vShowAll; renderVocab(); });
+
+  function reviewStreak() {
+    var days = {};
+    vocab().log.forEach(function (l) { days[l.date] = true; });
+    var streak = 0;
+    var cursor = new Date();
+    if (!days[todayISO()]) cursor.setDate(cursor.getDate() - 1);
+    while (days[iso(cursor)]) { streak++; cursor.setDate(cursor.getDate() - 1); }
+    return streak;
+  }
+
+  function renderVocab() {
+    var words = vocab().words;
+    var due = dueWords();
+    var t = todayISO();
+    $("vCount").textContent = words.length + " word" + (words.length === 1 ? "" : "s");
+    $("vSub").textContent = words.length
+      ? (due.length ? due.length + " due for review today. Play the round — a few minutes, every day, and they're yours." :
+        "Nothing due today. Add new words, or play a practice round anyway.")
+      : "Words you caught in the wild. Add them here, then play the daily round to make them stick.";
+    var play = $("vPlayBtn");
+    play.disabled = !words.length;
+    play.textContent = due.length ? "Play today’s round (" + Math.min(due.length, 12) + ")" : "Practice round";
+
+    var streak = reviewStreak();
+    $("vStreak").hidden = streak < 1;
+    $("vStreakN").textContent = streak;
+
+    var sorted = words.slice().sort(function (a, b) {
+      var ad = a.due || "0", bd = b.due || "0";
+      var aDue = ad <= t ? 0 : 1, bDue = bd <= t ? 0 : 1;
+      if (aDue !== bDue) return aDue - bDue;
+      if (ad !== bd) return ad < bd ? -1 : 1;
+      return (a.word || "").localeCompare(b.word || "");
+    });
+    var LIMIT = 8;
+    var shown = vShowAll ? sorted : sorted.slice(0, LIMIT);
+    $("vMoreBtn").hidden = sorted.length <= LIMIT;
+    $("vMoreBtn").textContent = vShowAll ? "Show fewer" : "Show all " + sorted.length;
+
+    var listEl = $("vList");
+    listEl.innerHTML = "";
+    if (!words.length) {
+      var em = document.createElement("li");
+      em.className = "empty";
+      em.textContent = "No words yet. Next time one catches your eye, drop it here.";
+      listEl.appendChild(em);
+      return;
+    }
+    shown.forEach(function (w) {
+      var li = document.createElement("li");
+      var main = document.createElement("div");
+      main.className = "v-main";
+      var word = document.createElement("span");
+      word.className = "v-word";
+      word.textContent = w.word;
+      main.appendChild(word);
+      if (!w.due || w.due <= t) {
+        var dueTag = document.createElement("span");
+        dueTag.className = "v-due";
+        dueTag.textContent = "due";
+        main.appendChild(dueTag);
+      }
+      if (w.def) {
+        var def = document.createElement("span");
+        def.className = "v-def";
+        def.textContent = w.def;
+        main.appendChild(def);
+      }
+      if (w.note) {
+        var note = document.createElement("span");
+        note.className = "v-note";
+        note.textContent = w.note;
+        main.appendChild(note);
+      }
+      var side = document.createElement("div");
+      side.className = "v-side";
+      var dots = document.createElement("div");
+      dots.className = "boxdots";
+      dots.title = "mastery " + (w.box || 1) + "/5";
+      for (var i = 1; i <= 5; i++) {
+        var dot = document.createElement("i");
+        if (i <= (w.box || 1)) dot.className = "on";
+        dots.appendChild(dot);
+      }
+      var del = document.createElement("button");
+      del.className = "xbtn";
+      del.textContent = "✕";
+      del.setAttribute("aria-label", "Delete " + w.word);
+      del.addEventListener("click", function () {
+        if (!confirm("Remove “" + w.word + "”?")) return;
+        pushOp({ type: "delWord", id: w.id });
+        renderVocab();
+      });
+      side.appendChild(dots);
+      side.appendChild(del);
+      li.appendChild(main);
+      li.appendChild(side);
+      listEl.appendChild(li);
+    });
+  }
+
+  // ---------- the daily game ----------
+  var G = null; // { qs, idx, right, sid, practice }
+
+  function buildQuestions() {
+    var t = todayISO();
+    var rng = mulberry32(seedFrom(t + ":" + OWNER));
+    var all = vocab().words;
+    var due = dueWords();
+    var practice = !due.length;
+    var pool = shuffled(practice ? all : due, rng).slice(0, practice ? 8 : 12);
+    var withDef = all.filter(function (w) { return w.def; });
+
+    var qs = pool.map(function (w, i) {
+      if (!w.def) return { w: w, type: "flash" };
+      var otherDefs = withDef.filter(function (x) { return x.id !== w.id; });
+      var otherWords = all.filter(function (x) { return x.id !== w.id; });
+      if ((w.box || 1) >= 3 && i % 3 === 2) return { w: w, type: "spell" };
+      if (otherDefs.length >= 3 && i % 2 === 0) {
+        return { w: w, type: "mcDef", choices: shuffled([w].concat(shuffled(otherDefs, rng).slice(0, 3)), rng) };
+      }
+      if (otherWords.length >= 3) {
+        return { w: w, type: "mcWord", choices: shuffled([w].concat(shuffled(otherWords, rng).slice(0, 3)), rng) };
+      }
+      return { w: w, type: "flash" };
+    });
+    return { qs: qs, practice: practice };
+  }
+
+  $("vPlayBtn").addEventListener("click", function () {
+    var built = buildQuestions();
+    if (!built.qs.length) return;
+    G = { qs: built.qs, idx: 0, right: 0, practice: built.practice, sid: uid("g") };
+    $("gTitle").textContent = built.practice ? "Practice round" : "Today's round";
+    $("gameOverlay").hidden = false;
+    renderQuestion();
+  });
+  $("gClose").addEventListener("click", closeGame);
+  function closeGame() {
+    // count whatever was answered so a half-round still logs the day
+    if (G && G.answered && !G.logged) logRound();
+    G = null;
+    $("gameOverlay").hidden = true;
+    renderVocab();
+    renderWeave();
+  }
+  function logRound() {
+    if (!G || G.logged) return;
+    G.logged = true;
+    if (!G.practice && G.answered) {
+      pushOp({ type: "log", sid: G.sid, date: todayISO(), asked: G.answered, right: G.right });
+    }
+  }
+
+  function answer(correct) {
+    G.answered = (G.answered || 0) + 1;
+    if (correct) G.right++;
+    if (!G.practice) pushOp({ type: "result", id: G.qs[G.idx].w.id, correct: correct, date: todayISO() });
+  }
+  function el(tag, cls, txt) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (txt !== undefined) e.textContent = txt;
+    return e;
+  }
+  function nextBtn(label) {
+    var b = el("button", "b green g-next", label || "Next");
+    b.addEventListener("click", function () { G.idx++; renderQuestion(); });
+    return b;
+  }
+
+  function renderQuestion() {
+    var body = $("gBody");
+    body.innerHTML = "";
+    if (!G) return;
+    $("gBar").style.width = Math.round((G.idx / G.qs.length) * 100) + "%";
+
+    if (G.idx >= G.qs.length) { renderEnd(body); return; }
+    var q = G.qs[G.idx], w = q.w;
+    var fb = el("p", "g-feedback");
+
+    if (q.type === "mcDef") {
+      body.appendChild(el("p", "g-prompt-label", (G.idx + 1) + " / " + G.qs.length + " · pick the meaning"));
+      body.appendChild(el("p", "g-prompt", w.word));
+      var opts = el("div", "g-opts");
+      q.choices.forEach(function (c) {
+        var b = el("button", "g-opt", c.def);
+        b.addEventListener("click", function () { settleMC(opts, b, c.id === w.id, fb); });
+        opts.appendChild(b);
+      });
+      body.appendChild(opts);
+      body.appendChild(fb);
+    } else if (q.type === "mcWord") {
+      body.appendChild(el("p", "g-prompt-label", (G.idx + 1) + " / " + G.qs.length + " · pick the word"));
+      body.appendChild(el("p", "g-prompt def", "“" + w.def + "”"));
+      var opts2 = el("div", "g-opts");
+      q.choices.forEach(function (c) {
+        var b = el("button", "g-opt", c.word);
+        b.addEventListener("click", function () { settleMC(opts2, b, c.id === w.id, fb); });
+        opts2.appendChild(b);
+      });
+      body.appendChild(opts2);
+      body.appendChild(fb);
+    } else if (q.type === "spell") {
+      body.appendChild(el("p", "g-prompt-label", (G.idx + 1) + " / " + G.qs.length + " · type the word"));
+      body.appendChild(el("p", "g-prompt def", "“" + w.def + "”"));
+      var input = el("input", "field");
+      input.type = "text";
+      input.autocapitalize = "none"; input.autocorrect = "off"; input.spellcheck = false;
+      input.setAttribute("aria-label", "Type the word");
+      var row = el("div", "set-row");
+      row.appendChild(input);
+      var go = el("button", "b", "Check");
+      row.appendChild(go);
+      body.appendChild(row);
+      body.appendChild(fb);
+      var settle = function () {
+        if (go.disabled) return;
+        go.disabled = true; input.disabled = true;
+        var ok = input.value.trim().toLowerCase() === w.word.trim().toLowerCase();
+        answer(ok);
+        fb.className = "g-feedback " + (ok ? "ok" : "no");
+        fb.textContent = ok ? "yes — " + w.word : "it's “" + w.word + "”";
+        body.appendChild(nextBtn(G.idx + 1 >= G.qs.length ? "Finish" : "Next"));
+      };
+      go.addEventListener("click", settle);
+      input.addEventListener("keydown", function (e) { if (e.key === "Enter") settle(); });
+      setTimeout(function () { input.focus(); }, 50);
+    } else { // flash — self-graded recall
+      body.appendChild(el("p", "g-prompt-label", (G.idx + 1) + " / " + G.qs.length + " · say the meaning, then reveal"));
+      body.appendChild(el("p", "g-prompt", w.word));
+      var reveal = el("button", "b ghost", "Reveal");
+      body.appendChild(reveal);
+      reveal.addEventListener("click", function () {
+        reveal.remove();
+        var box = el("div", "g-reveal", w.def || "No definition saved — add one from the list so this word gets real questions.");
+        if (w.note) box.appendChild(el("span", "v-note", " — " + w.note));
+        body.insertBefore(box, fb);
+        var row = el("div", "btnrow");
+        var yes = el("button", "b green", "I knew it");
+        var no = el("button", "b ghost", "Not yet");
+        yes.addEventListener("click", function () { answer(true); G.idx++; renderQuestion(); });
+        no.addEventListener("click", function () { answer(false); G.idx++; renderQuestion(); });
+        row.appendChild(yes); row.appendChild(no);
+        body.appendChild(row);
+      });
+      body.appendChild(fb);
+    }
+  }
+  function settleMC(optsEl, clicked, ok, fb) {
+    var buttons = optsEl.querySelectorAll("button");
+    var q = G.qs[G.idx], w = q.w;
+    buttons.forEach(function (b) {
+      b.disabled = true;
+      var isRight = (q.type === "mcDef" ? b.textContent === w.def : b.textContent === w.word);
+      if (isRight) b.classList.add("right");
+    });
+    if (!ok) clicked.classList.add("wrong");
+    answer(ok);
+    fb.className = "g-feedback " + (ok ? "ok" : "no");
+    fb.textContent = ok ? "got it" : "noted — it'll come back tomorrow";
+    var delay = ok ? 700 : 1600;
+    setTimeout(function () { if (G) { G.idx++; renderQuestion(); } }, delay);
+  }
+  function renderEnd(body) {
+    $("gBar").style.width = "100%";
+    logRound();
+    var wrap = el("div", "g-end");
+    wrap.appendChild(el("p", "g-prompt-label", G.practice ? "practice round" : "today's round"));
+    wrap.appendChild(el("div", "big", G.right + "/" + G.answered));
+    var streak = reviewStreak();
+    wrap.appendChild(el("p", "sub",
+      G.right === G.answered ? "Clean sweep. The words move up a box." :
+      "Missed ones drop to box 1 and come back tomorrow." ));
+    if (!G.practice && streak > 1) wrap.appendChild(el("p", "sub", streak + "-day review streak — keep the thread."));
+    var done = el("button", "b", "Done");
+    done.addEventListener("click", closeGame);
+    wrap.appendChild(done);
+    body.appendChild(wrap);
+  }
+
+  // ---------- sync settings ----------
+  $("setBtn").addEventListener("click", function () {
+    $("tokenInput").value = token() ? "•••••••• (saved)" : "";
+    $("tokenStatus").textContent = "";
+    $("setOverlay").hidden = false;
+  });
+  $("setClose").addEventListener("click", function () { $("setOverlay").hidden = true; });
+  $("tokenSave").addEventListener("click", function () {
+    var v = $("tokenInput").value.trim();
+    if (!v || v.indexOf("•") === 0) { $("setOverlay").hidden = true; return; }
+    try { localStorage.setItem(LS_TOKEN, v); } catch (e) {}
+    $("tokenStatus").textContent = "Checking…";
+    apiFetchData().then(function () {
+      $("tokenStatus").textContent = "Connected. This device now syncs.";
+      setTimeout(function () { $("setOverlay").hidden = true; }, 900);
+      syncNow();
+    }).catch(function () {
+      $("tokenStatus").textContent = "Couldn't read the repo with that token — check its repo access and Contents permission.";
+    });
+  });
+  $("tokenClear").addEventListener("click", function () {
+    try { localStorage.removeItem(LS_TOKEN); } catch (e) {}
+    $("tokenInput").value = "";
+    $("tokenStatus").textContent = "Forgotten. This device is local-only again.";
+    setSync("off", "local only — tap Sync");
+  });
+
+  // ---------- calendar ----------
+  function renderCalendar() {
+    var now = new Date();
+    var y = now.getFullYear(), m = now.getMonth();
+    $("calMonth").textContent = now.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+
+    var eventDays = {};
+    (DATA.calendar || []).forEach(function (ev) {
+      var d = new Date(ev.date + "T00:00:00");
+      if (d.getFullYear() === y && d.getMonth() === m) eventDays[d.getDate()] = true;
+    });
+    var recDays = {};
+    (DATA.recurring || []).forEach(function (r) { (r.days || []).forEach(function (dw) { recDays[dw] = true; }); });
+
+    var first = new Date(y, m, 1).getDay();
+    var count = new Date(y, m + 1, 0).getDate();
+    var html = "<tr>" + ["S", "M", "T", "W", "T", "F", "S"].map(function (d) { return "<th>" + d + "</th>"; }).join("") + "</tr><tr>";
+    for (var b = 0; b < first; b++) html += "<td class='dim'></td>";
+    for (var day = 1; day <= count; day++) {
+      var dw = new Date(y, m, day).getDay();
+      if (dw === 0 && day !== 1) html += "</tr><tr>";
+      var cls = day === now.getDate() ? " class='today'" : "";
+      var dots = "";
+      if (eventDays[day]) dots += "<span class='dot'></span>";
+      else if (recDays[dw]) dots += "<span class='dot rec'></span>";
+      html += "<td" + cls + ">" + day + dots + "</td>";
+    }
+    html += "</tr>";
+    $("calTable").innerHTML = html;
+
+    var nu = $("nextUp");
+    nu.innerHTML = "";
+    var horizon = new Date(now.getTime() + 14 * 86400000);
+    var upcoming = (DATA.calendar || []).map(function (ev) {
+      return { ev: ev, d: new Date(ev.date + "T00:00:00") };
+    }).filter(function (x) {
+      return x.d >= new Date(y, m, now.getDate()) && x.d <= horizon;
+    }).sort(function (a, b) { return a.d - b.d; });
+    if (!upcoming.length) {
+      nu.innerHTML = "<div class='empty'>Next two weeks are clear. Tell Claude what's coming.</div>";
+    } else {
+      upcoming.forEach(function (x) {
+        var row = document.createElement("div");
+        row.className = "nu";
+        var d = document.createElement("span");
+        d.className = "d";
+        d.textContent = x.d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+        var t = document.createElement("span");
+        t.textContent = (x.ev.time ? x.ev.time + " · " : "") + x.ev.title;
+        row.appendChild(d); row.appendChild(t);
+        nu.appendChild(row);
+      });
+    }
+  }
+
+  // ---------- weave ----------
+  function renderWeave() {
+    var byDate = {};
+    (DATA.weave || []).forEach(function (r) { byDate[r.date] = (r.threads || []).slice(); });
+    // vocab rounds stitch themselves in
+    vocab().log.forEach(function (l) {
+      if (!byDate[l.date]) byDate[l.date] = [];
+      if (byDate[l.date].indexOf("vocab") === -1) byDate[l.date].push("vocab");
+    });
+
+    var grid = $("weaveGrid");
+    grid.innerHTML = "";
+    var now = new Date();
+    var start = new Date(now.getTime() - 69 * 86400000);
+    start = new Date(start.getTime() - start.getDay() * 86400000);
+    var t = todayISO();
+    for (var d = new Date(start); d <= now; d.setDate(d.getDate() + 1)) {
+      var dISO = iso(d);
+      var cell = document.createElement("div");
+      cell.className = "cell" + (dISO === t ? " today" : "");
+      var threads = byDate[dISO];
+      if (threads && threads.length) {
+        cell.title = dISO + " — " + threads.join(", ");
+        threads.slice(0, 3).forEach(function (name) {
+          var s = document.createElement("span");
+          s.style.background = THREADS[name] || THREADS.moss;
+          cell.appendChild(s);
+        });
+      } else {
+        cell.title = dISO;
+      }
+      grid.appendChild(cell);
+    }
+    grid.scrollLeft = grid.scrollWidth;
+
+    var streak = 0;
+    var cursor = new Date();
+    if (!byDate[t]) cursor.setDate(cursor.getDate() - 1);
+    while (byDate[iso(cursor)]) { streak++; cursor.setDate(cursor.getDate() - 1); }
+    var chip = $("streakchip");
+    if (streak > 0) {
+      chip.hidden = false;
+      $("streakN").textContent = streak;
+      $("streakLbl").textContent = "day streak";
+    } else if ((DATA.weave || []).length) {
+      chip.hidden = false;
+      $("streakN").textContent = "·";
+      $("streakLbl").textContent = "pick the thread back up";
+    }
+  }
+
+  // ---------- boot ----------
+  function renderAll() {
+    renderList($("loopsList"), DATA.openLoops, { checkable: true, weight: true, emptyText: "No open loops. Rare. Savor it." });
+    renderList($("winsList"), DATA.quickWins, { checkable: true, emptyText: "No quick wins queued — ask Claude to pull some from the dump." });
+    renderList($("wantList"), DATA.wantToDo, { emptyText: "What would be fun? Tell Claude." });
+    renderList($("projList"), DATA.projectIdeas, { emptyText: "No ideas parked. They'll come." });
+    renderList($("questList"), DATA.questions, { emptyText: "No questions on deck." });
+    renderDump();
+    renderCounts();
+    renderTodayMeta();
+    renderVocab();
+    renderCalendar();
+    renderWeave();
+    $("lastUpdated").textContent = (DATA.meta && DATA.meta.updated) || "—";
+  }
+
+  renderHeader();
+  var boot = token()
+    ? apiFetchData().then(function (r) { REMOTE_SHA = r.sha; return r.json; })
+    : fetch("data.json?t=" + Date.now()).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
+  boot
+    .then(function (json) {
+      DATA = json;
+      load(LS_OPS, []).forEach(function (op) { applyOp(DATA, op); });
+      renderAll();
+      if (token()) {
+        setSync("on", "synced " + new Date().toTimeString().slice(0, 5));
+        if (load(LS_OPS, []).length) scheduleSync();
+      } else {
+        setSync("off", "local only — tap Sync");
+      }
+    })
+    .catch(function () {
+      DATA = { quickWins: [], openLoops: [], wantToDo: [], projectIdeas: [], questions: [], brainDump: [], calendar: [], recurring: [], weave: [], vocab: { words: [], log: [] }, meta: {} };
+      load(LS_OPS, []).forEach(function (op) { applyOp(DATA, op); });
+      renderAll();
+      $("todaymeta").textContent = "Couldn't load data.json — offline? Showing local state.";
+    });
+
+  // pull fresh whenever you come back to the tab
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden && token() && !load(LS_OPS, []).length) pullFresh();
+  });
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js").catch(function () {});
+  }
+})();
+</script>
+</body>
+</html>
