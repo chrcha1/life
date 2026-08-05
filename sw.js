@@ -1,4 +1,4 @@
-const CACHE = "weave-v3";
+const CACHE = "weave-v4";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", (e) => {
@@ -22,8 +22,11 @@ self.addEventListener("fetch", (e) => {
   const networkFirst =
     e.request.mode === "navigate" ||
     url.pathname.endsWith("/index.html") ||
-    url.pathname.endsWith("/data.json");
-  const cacheKey = url.pathname.endsWith("/data.json") ? "./data.json" : e.request;
+    url.pathname.endsWith("/data.json") ||
+    url.pathname.endsWith("/events.json");
+  const cacheKey = url.pathname.endsWith("/data.json") ? "./data.json"
+    : url.pathname.endsWith("/events.json") ? "./events.json"
+    : e.request;
 
   if (networkFirst) {
     e.respondWith(

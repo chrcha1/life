@@ -22,6 +22,22 @@ From then on that device reads the freshest `data.json` straight from the API an
 - Rounds stitch a green thread into the weave and build their own review streak.
 - All of it lives in the `vocab` section of `data.json`. **Claude is told at check-in to pass this section through untouched** — the app owns it.
 
+## Calendar sync (Google / Apple)
+
+Your real calendars flow into the week view via a GitHub Action that pulls ICS feeds every 30 minutes and commits `events.json` (the page reads it same-origin — no CORS problem, no third-party proxy seeing your calendar).
+
+One-time setup:
+
+1. Grab each calendar's private ICS URL:
+   - **Google**: Google Calendar → Settings → your calendar → *Integrate calendar* → **Secret address in iCal format**.
+   - **Apple**: iCloud.com → Calendar → share icon next to the calendar → **Public Calendar** → copy the `webcal://` link.
+2. Repo → Settings → Secrets and variables → Actions → **New repository secret** → name `ICS_URLS`, value = the URLs, one per line.
+3. Actions tab → *calendar-sync* → **Run workflow** once (after that it runs every 30 min).
+
+External events show a small dot in the week view; events you add through Claude live in `data.json` and take precedence over duplicates. All-day events show as "all day". Times are rendered in Pacific time (edit `TZ` in `scripts/sync_calendar.py` if that changes).
+
+These URLs grant read access to your calendar to anyone who has them — treat them like passwords (that's why they live in an Actions secret, not in the code). If one leaks, both Google and Apple let you reset it.
+
 ## The daily loop
 
 1. Tap **Check in with Claude**. It opens a Claude chat pre-filled with what you checked off and jotted today.

@@ -65,6 +65,12 @@
   }
   .tb-mark { font-family: var(--display); font-weight: 600; font-size: 14px; letter-spacing: 0.4px; color: var(--sand); }
   .tb-right { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .tb-date {
+    background: none; border: 0; cursor: pointer; padding: 2px 3px;
+    font-family: var(--mono); font-size: 12px; color: var(--muted);
+    border-bottom: 1px dotted var(--faint);
+  }
+  .tb-date:hover { color: var(--text); }
   .tb-sync { background: none; border: 0; cursor: pointer; padding: 4px; font-size: 13px; line-height: 1; }
   .tb-sync i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--faint); }
   .tb-sync.on i { background: var(--sage); }
@@ -218,6 +224,16 @@
   #sec-loops li.w3 { border-left-color: var(--clay); border-left-width: 4px; background: linear-gradient(90deg, var(--clay-dim), transparent 55%); }
   #sec-loops li.w3 .txt { font-weight: 650; font-size: 15.5px; }
   .wtag { font-family: var(--mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--clay); padding-top: 4px; }
+  #sec-loops li.loopgroup {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: 1.6px; text-transform: uppercase;
+    color: var(--faint);
+    padding: 12px 0 4px;
+    border-left: 0; border-bottom: 0; background: none;
+  }
+  #sec-loops li.loopgroup:first-child { padding-top: 0; }
+  #sec-loops li.loopgroup::after { content: ""; flex: 1; height: 1px; background: var(--line-soft); }
+  #sec-loops li.loopgroup b { color: var(--muted); font-weight: 600; }
 
   /* wins progress */
   .winsbar { height: 4px; background: var(--card-2); border-radius: 99px; overflow: hidden; margin: 2px 0 4px; }
@@ -225,7 +241,9 @@
 
   /* ---------- week agenda ---------- */
   .week { list-style: none; margin: 0; padding: 0; }
-  .week li { display: flex; gap: 12px; padding: 8px 8px; border-bottom: 1px solid var(--line-soft); border-radius: 8px; }
+  .week li { display: flex; gap: 12px; padding: 8px 8px; border-bottom: 1px solid var(--line-soft); border-radius: 8px; cursor: pointer; }
+  .week li:hover { background: var(--card-2); }
+  .week li.today:hover { background: var(--amber-dim); }
   .week li:last-child { border-bottom: 0; }
   .week li.today { background: var(--amber-dim); border-bottom-color: transparent; padding: 10px 8px; }
   .wk-day { min-width: 44px; text-align: center; flex: none; }
@@ -236,6 +254,7 @@
   .wk-items { flex: 1; min-width: 0; display: grid; gap: 3px; align-content: center; }
   .wk-ev { display: flex; gap: 8px; align-items: baseline; font-size: 14px; line-height: 1.35; }
   .wk-ev .t { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 12px; color: var(--amber); flex: none; min-width: 42px; }
+  .wk-ev .src { width: 6px; height: 6px; border-radius: 50%; background: var(--sand); opacity: 0.65; flex: none; align-self: center; }
   .wk-ev.rec .t { color: var(--moss); }
   .wk-ev.rec .n { color: var(--muted); }
   .wk-ev.past { opacity: 0.45; }
@@ -367,6 +386,14 @@
   .g-end .big { font-family: var(--display); font-size: 40px; font-weight: 600; color: var(--sage); margin: 6px 0; }
   .g-end .sub, .g-end .g-prompt-label { margin: 4px 0; }
   .g-reveal { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin: 0 0 14px; color: var(--muted); font-size: 15px; }
+  .dd-date { font-family: var(--mono); font-size: 12px; color: var(--muted); margin: 0 0 12px; }
+  .dd-list { display: grid; gap: 9px; margin: 0 0 6px; }
+  .dd-ev { display: flex; gap: 12px; align-items: baseline; font-size: 15.5px; padding: 9px 12px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; }
+  .dd-ev .t { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 13px; color: var(--amber); flex: none; min-width: 46px; }
+  .dd-ev.rec .t { color: var(--moss); }
+  .dd-ev.past { opacity: 0.45; }
+  .dd-sum { font-family: var(--mono); font-size: 12px; color: var(--muted); margin: 12px 0 0; line-height: 1.8; }
+  .dd-sum b { color: var(--amber); }
   .set-p { font-size: 13.5px; color: var(--muted); margin: 8px 0; }
   .set-p code { font-family: var(--mono); font-size: 12px; color: var(--sand); }
   .set-row { display: flex; gap: 8px; margin: 12px 0; }
@@ -385,7 +412,7 @@
 <div class="topbar">
   <span class="tb-mark">The Weave</span>
   <span class="tb-right">
-    <span id="datebar"></span>
+    <button class="tb-date" id="datebar" aria-label="Show today"></button>
     <button class="tb-sync" id="tbSync" aria-label="Sync settings"><i></i></button>
   </span>
 </div>
@@ -406,7 +433,7 @@
     <a class="tile" href="#sec-loops" id="tileLoops"><div class="tv" id="tLoopsN">–</div><div class="tl">loops open</div></a>
     <a class="tile" href="#sec-wins" id="tileWins"><div class="tv" id="tWinsN">–</div><div class="tl">wins</div><div class="tbarwrap"><i id="tWinsBar"></i></div></a>
     <a class="tile" href="#sec-vocab" id="tileVocab"><div class="tv" id="tVocabN">–</div><div class="tl">words due</div></a>
-    <a class="tile" href="#sec-weave" id="tileStreak"><div class="tv" id="tStreakN">–</div><div class="tl">day streak</div></a>
+    <a class="tile" href="#sec-week" id="tileToday" role="button"><div class="tv" id="tTodayN">–</div><div class="tl">today</div></a>
   </div>
 
   <div class="btnrow">
@@ -456,7 +483,6 @@
         <p class="sub" id="vSub"></p>
         <div class="v-stats">
           <button class="b" id="vPlayBtn">Play today’s round</button>
-          <span class="badge ok" id="vStreak" hidden><span id="vStreakN">0</span>-day review streak</span>
         </div>
         <div class="v-add">
           <div class="row2">
@@ -481,7 +507,7 @@
       </section>
 
       <section class="card quiet" id="sec-weave">
-        <div class="eyebrow"><h2>The Weave</h2><span class="spacer"></span><span class="badge" id="weaveBadge" hidden></span></div>
+        <div class="eyebrow"><h2>The Weave</h2></div>
         <div class="weavegrid" id="weaveGrid"></div>
         <div class="threadchips" id="threadChips"></div>
         <p class="weavenote">One stitch per day you show up — darker means a fuller day. Chips count the last 7 days.</p>
@@ -493,6 +519,17 @@
   <footer class="note">
     <p>With sync on, everything you do here lands straight in <code>data.json</code> on GitHub — same page on every device. Last woven: <span id="lastUpdated">—</span>.</p>
   </footer>
+</div>
+
+<!-- day detail -->
+<div class="overlay" id="dayOverlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Day detail">
+    <button class="b ghost close" id="dayClose">✕</button>
+    <h3 id="dayTitle">Today</h3>
+    <p class="dd-date" id="daySub"></p>
+    <div class="dd-list" id="dayList"></div>
+    <p class="dd-sum" id="daySum" hidden></p>
+  </div>
 </div>
 
 <!-- vocab game -->
@@ -608,6 +645,32 @@
   function dueWords() {
     var t = todayISO();
     return vocab().words.filter(function (w) { return !w.due || w.due <= t; });
+  }
+
+  // ---------- external calendars (Google / Apple via ICS → Action → events.json) ----------
+  var EXT = []; // [{date, time, end, title, cal}]
+  function fetchExtEvents() {
+    return fetch("events.json?t=" + Date.now())
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (j) { EXT = (j && j.events) || []; })
+      .catch(function () { /* not set up yet — fine */ });
+  }
+  function allEvents() {
+    var seen = {};
+    var out = [];
+    (DATA.calendar || []).forEach(function (ev) {
+      if (!ev.date) return;
+      seen[ev.date + "|" + (ev.time || "") + "|" + (ev.title || "").toLowerCase()] = true;
+      out.push({ date: ev.date, time: ev.time || null, title: ev.title, ext: false });
+    });
+    EXT.forEach(function (ev) {
+      if (!ev.date) return;
+      var k = ev.date + "|" + (ev.time || "") + "|" + (ev.title || "").toLowerCase();
+      if (seen[k]) return; // manual entry wins
+      seen[k] = true;
+      out.push({ date: ev.date, time: ev.time || null, end: ev.end || null, title: ev.title, ext: true });
+    });
+    return out;
   }
 
   // ---------- ops: every mutation is an op, applied locally + replayed onto remote ----------
@@ -788,7 +851,7 @@
     var now = new Date();
     var t = todayISO();
     var cands = [];
-    (DATA.calendar || []).forEach(function (ev) {
+    allEvents().forEach(function (ev) {
       if (!ev.date || ev.date < t) return;
       var dt = new Date(ev.date + "T" + (ev.time || "09:00") + ":00");
       if (dt > now) cands.push({ dt: dt, title: ev.title, timed: !!ev.time });
@@ -834,15 +897,16 @@
     var checks = load(LS_CHECKS, {});
     return !!(item.done || checks[item.id]);
   }
-  function weaveStreak() {
-    var byDate = {};
-    (DATA.weave || []).forEach(function (r) { byDate[r.date] = true; });
-    vocab().log.forEach(function (l) { byDate[l.date] = true; });
-    var streak = 0;
-    var cursor = new Date();
-    if (!byDate[todayISO()]) cursor.setDate(cursor.getDate() - 1);
-    while (byDate[iso(cursor)]) { streak++; cursor.setDate(cursor.getDate() - 1); }
-    return streak;
+  function todaySchedule(dISO) {
+    var d = new Date(dISO + "T12:00:00");
+    var items = allEvents().filter(function (ev) { return ev.date === dISO; })
+      .map(function (ev) { return { time: ev.time, title: ev.title, ext: ev.ext, end: ev.end }; });
+    (DATA.recurring || []).forEach(function (r) {
+      if ((r.days || []).indexOf(d.getDay()) === -1) return;
+      items.push({ time: r.time || null, title: r.title, rec: true });
+    });
+    items.sort(function (a, b) { return (a.time || "99") < (b.time || "99") ? -1 : 1; });
+    return items;
   }
   function renderTiles() {
     var loops = (DATA.openLoops || []).filter(function (l) { return !isDone(l); });
@@ -850,7 +914,7 @@
     var wins = DATA.quickWins || [];
     var winsDone = wins.filter(isDone).length;
     var due = dueWords().length;
-    var streak = weaveStreak();
+    var todayN = todaySchedule(todayISO()).length;
 
     $("tLoopsN").textContent = loops.length;
     $("tileLoops").className = "tile" + (loops.length === 0 ? " calm" : heavy ? " hot" : "");
@@ -859,11 +923,35 @@
     $("tileWins").className = "tile" + (wins.length && winsDone === wins.length ? " calm" : "");
     $("tVocabN").textContent = due;
     $("tileVocab").className = "tile" + (due > 0 ? " due" : " zero");
-    $("tStreakN").textContent = streak;
-    $("tileStreak").className = "tile" + (streak > 0 ? " calm" : " zero");
+    $("tTodayN").textContent = todayN;
+    $("tileToday").className = "tile" + (todayN > 0 ? " due" : " zero");
   }
 
   // ---------- generic lists ----------
+  function makeItemLi(item, opts) {
+    var li = document.createElement("li");
+    if (opts.weight && item.weight >= 2) li.classList.add("w" + Math.min(item.weight, 3));
+    if (opts.checkable) {
+      var cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.className = "check";
+      cb.checked = isDone(item);
+      cb.setAttribute("aria-label", item.text);
+      cb.addEventListener("change", function () {
+        var checks = load(LS_CHECKS, {});
+        if (cb.checked) checks[item.id] = true; else delete checks[item.id];
+        save(LS_CHECKS, checks);
+        pushOp({ type: "check", id: item.id, done: cb.checked, date: todayISO() });
+        li.classList.toggle("done", cb.checked);
+        renderCounts();
+      });
+      li.appendChild(cb);
+      if (isDone(item)) li.classList.add("done");
+    }
+    li.appendChild(el("span", "txt", item.text));
+    if (opts.weight && (item.weight || 1) >= 3 && !isDone(item)) li.appendChild(el("span", "wtag", "heavy"));
+    return li;
+  }
   function renderList(listEl, items, opts) {
     listEl.innerHTML = "";
     if (!items || !items.length) {
@@ -871,29 +959,29 @@
       listEl.appendChild(em);
       return;
     }
-    items.forEach(function (item) {
-      var li = document.createElement("li");
-      if (opts.weight && item.weight >= 2) li.classList.add("w" + Math.min(item.weight, 3));
-      if (opts.checkable) {
-        var cb = document.createElement("input");
-        cb.type = "checkbox";
-        cb.className = "check";
-        cb.checked = isDone(item);
-        cb.setAttribute("aria-label", item.text);
-        cb.addEventListener("change", function () {
-          var checks = load(LS_CHECKS, {});
-          if (cb.checked) checks[item.id] = true; else delete checks[item.id];
-          save(LS_CHECKS, checks);
-          pushOp({ type: "check", id: item.id, done: cb.checked, date: todayISO() });
-          li.classList.toggle("done", cb.checked);
-          renderCounts();
-        });
-        li.appendChild(cb);
-        if (isDone(item)) li.classList.add("done");
-      }
-      li.appendChild(el("span", "txt", item.text));
-      if (opts.weight && (item.weight || 1) >= 3 && !isDone(item)) li.appendChild(el("span", "wtag", "heavy"));
-      listEl.appendChild(li);
+    items.forEach(function (item) { listEl.appendChild(makeItemLi(item, opts)); });
+  }
+  function renderLoops() {
+    var listEl = $("loopsList");
+    listEl.innerHTML = "";
+    var loops = (DATA.openLoops || []).slice();
+    if (!loops.length) {
+      listEl.appendChild(el("li", "empty", "No open loops. Rare. Savor it."));
+      return;
+    }
+    [{ key: "work", label: "Work" }, { key: "home", label: "Home & life" }].forEach(function (g) {
+      var items = loops.filter(function (l) {
+        return g.key === "work" ? l.area === "work" : l.area !== "work";
+      }).sort(function (a, b) { return (b.weight || 1) - (a.weight || 1); });
+      if (!items.length) return;
+      var openN = items.filter(function (l) { return !isDone(l); }).length;
+      var head = el("li", "loopgroup");
+      head.appendChild(el("b", "", g.label));
+      head.appendChild(el("span", "", openN + " open"));
+      listEl.appendChild(head);
+      items.forEach(function (item) {
+        listEl.appendChild(makeItemLi(item, { checkable: true, weight: true }));
+      });
     });
   }
   function renderCounts() {
@@ -969,7 +1057,7 @@
     msg += "1) Ask me for today's brain dump — I'll talk it out. ";
     msg += "2) Ask what else moved. Already checked off today: " + (doneTxt.length ? doneTxt.join("; ") : "nothing yet") + ". ";
     msg += "New jots: " + (jots.length ? jots.join("; ") : "none") + ". ";
-    msg += "3) Then fetch " + dataUrl + ", fold everything in — clear done items, keep IDs stable, add today's weave row with the right threads — and give me the complete updated data.json to commit. ";
+    msg += "3) Then fetch " + dataUrl + ", fold everything in — clear done items, keep IDs stable, tag every open loop with area: \"work\" or \"home\", add today's weave row with the right threads — and give me the complete updated data.json to commit. ";
     msg += "IMPORTANT: the \"vocab\" section (words, boxes, due dates, log) is managed by the app itself — copy it through byte-for-byte unless I explicitly ask to change a word.";
     return msg;
   }
@@ -993,44 +1081,39 @@
   }
 
   // ---------- week agenda ----------
+  function evRow(item, past) {
+    var row = el("div", "wk-ev" + (item.rec ? " rec" : "") + (past ? " past" : ""));
+    row.appendChild(el("span", "t", item.time || (item.rec ? "" : "all day")));
+    row.appendChild(el("span", "n", item.title));
+    if (item.ext) row.appendChild(el("span", "src")); // dot = from your calendar
+    return row;
+  }
   function renderWeek() {
     var listEl = $("weekList");
     listEl.innerHTML = "";
     var now = new Date();
-    var t = todayISO();
-    var evByDate = {};
-    (DATA.calendar || []).forEach(function (ev) {
-      if (!evByDate[ev.date]) evByDate[ev.date] = [];
-      evByDate[ev.date].push(ev);
-    });
+    var nowHM = now.toTimeString().slice(0, 5);
     var count = 0;
     for (var i = 0; i < 7; i++) {
       var d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i);
       var dISO = iso(d);
       var li = document.createElement("li");
       if (i === 0) li.classList.add("today");
+      li.setAttribute("role", "button");
+      li.tabIndex = 0;
+      (function (dd) {
+        li.addEventListener("click", function () { openDay(dd); });
+        li.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openDay(dd); } });
+      })(dISO);
       var day = el("div", "wk-day");
       day.appendChild(el("div", "dw", i === 0 ? "today" : d.toLocaleDateString("en-US", { weekday: "short" })));
       day.appendChild(el("div", "dn", String(d.getDate())));
       li.appendChild(day);
       var itemsEl = el("div", "wk-items");
-
-      var evs = (evByDate[dISO] || []).slice().sort(function (a, b) { return (a.time || "99") < (b.time || "99") ? -1 : 1; });
-      evs.forEach(function (ev) {
-        var past = i === 0 && ev.time && (ev.time < now.toTimeString().slice(0, 5));
-        var row = el("div", "wk-ev" + (past ? " past" : ""));
-        row.appendChild(el("span", "t", ev.time || "all day"));
-        row.appendChild(el("span", "n", ev.title));
-        itemsEl.appendChild(row);
-        count++;
-      });
-      (DATA.recurring || []).forEach(function (r) {
-        if ((r.days || []).indexOf(d.getDay()) === -1) return;
-        var past = i === 0 && r.time && (r.time < now.toTimeString().slice(0, 5));
-        var row = el("div", "wk-ev rec" + (past ? " past" : ""));
-        row.appendChild(el("span", "t", r.time || ""));
-        row.appendChild(el("span", "n", r.title));
-        itemsEl.appendChild(row);
+      todaySchedule(dISO).forEach(function (item) {
+        var past = i === 0 && item.time && item.time < nowHM;
+        itemsEl.appendChild(evRow(item, past));
+        if (!item.rec) count++;
       });
       if (!itemsEl.children.length) itemsEl.appendChild(el("div", "wk-none", "—"));
       li.appendChild(itemsEl);
@@ -1041,8 +1124,8 @@
 
     // beyond the week
     var horizon = iso(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 6));
-    var later = (DATA.calendar || []).filter(function (ev) { return ev.date > horizon; })
-      .sort(function (a, b) { return a.date < b.date ? -1 : 1; }).slice(0, 4);
+    var later = allEvents().filter(function (ev) { return ev.date > horizon; })
+      .sort(function (a, b) { return a.date < b.date ? -1 : (a.date > b.date ? 1 : ((a.time || "99") < (b.time || "99") ? -1 : 1)); }).slice(0, 4);
     $("laterWrap").hidden = !later.length;
     var lw = $("laterList");
     lw.innerHTML = "";
@@ -1051,9 +1134,56 @@
       var row = el("div", "wk-ev");
       row.appendChild(el("span", "t", d.toLocaleDateString("en-US", { month: "short", day: "numeric" })));
       row.appendChild(el("span", "n", (ev.time ? ev.time + " · " : "") + ev.title));
+      if (ev.ext) row.appendChild(el("span", "src"));
       lw.appendChild(row);
     });
   }
+
+  // ---------- day detail ----------
+  function openDay(dISO) {
+    var d = new Date(dISO + "T12:00:00");
+    var isToday = dISO === todayISO();
+    $("dayTitle").textContent = isToday ? "Today" :
+      d.toLocaleDateString("en-US", { weekday: "long" });
+    $("daySub").textContent = d.toLocaleDateString("en-US", { weekday: "short", month: "long", day: "numeric", year: "numeric" });
+    var list = $("dayList");
+    list.innerHTML = "";
+    var nowHM = new Date().toTimeString().slice(0, 5);
+    var items = todaySchedule(dISO);
+    if (!items.length) {
+      list.appendChild(el("div", "empty", "Nothing scheduled."));
+    } else {
+      items.forEach(function (item) {
+        var past = isToday && item.time && item.time < nowHM;
+        var row = el("div", "dd-ev" + (item.rec ? " rec" : "") + (past ? " past" : ""));
+        var tLabel = item.time ? (item.end ? item.time + "–" + item.end : item.time) : "all day";
+        row.appendChild(el("span", "t", tLabel));
+        row.appendChild(el("span", "n", item.title));
+        list.appendChild(row);
+      });
+    }
+    var sum = $("daySum");
+    if (isToday) {
+      var loopsOpen = (DATA.openLoops || []).filter(function (l) { return !isDone(l); }).length;
+      var wins = DATA.quickWins || [];
+      var winsDone = wins.filter(isDone).length;
+      sum.hidden = false;
+      sum.innerHTML = "";
+      sum.appendChild(el("span", "", "on your plate: "));
+      var b1 = el("b", "", String(loopsOpen)); sum.appendChild(b1);
+      sum.appendChild(el("span", "", " loops open · "));
+      var b2 = el("b", "", winsDone + "/" + wins.length); sum.appendChild(b2);
+      sum.appendChild(el("span", "", " wins · "));
+      var b3 = el("b", "", String(dueWords().length)); sum.appendChild(b3);
+      sum.appendChild(el("span", "", " words due"));
+    } else {
+      sum.hidden = true;
+    }
+    $("dayOverlay").hidden = false;
+  }
+  $("dayClose").addEventListener("click", function () { $("dayOverlay").hidden = true; });
+  $("dayOverlay").addEventListener("click", function (e) { if (e.target === $("dayOverlay")) $("dayOverlay").hidden = true; });
+  $("datebar").addEventListener("click", function () { if (DATA) openDay(todayISO()); });
 
   // ---------- vocabulary ----------
   function addWord() {
@@ -1083,16 +1213,6 @@
   });
   $("vMoreBtn").addEventListener("click", function () { vShowAll = !vShowAll; renderVocab(); });
 
-  function reviewStreak() {
-    var days = {};
-    vocab().log.forEach(function (l) { days[l.date] = true; });
-    var streak = 0;
-    var cursor = new Date();
-    if (!days[todayISO()]) cursor.setDate(cursor.getDate() - 1);
-    while (days[iso(cursor)]) { streak++; cursor.setDate(cursor.getDate() - 1); }
-    return streak;
-  }
-
   function renderVocab() {
     var words = vocab().words;
     var due = dueWords();
@@ -1107,10 +1227,6 @@
     play.disabled = !words.length;
     play.textContent = due.length ? "Play today’s round (" + Math.min(due.length, 12) + ")" : "Practice round";
     play.className = due.length ? "b" : "b ghost";
-
-    var streak = reviewStreak();
-    $("vStreak").hidden = streak < 1;
-    $("vStreakN").textContent = streak;
 
     var sorted = words.slice().sort(function (a, b) {
       var ad = a.due || "0", bd = b.due || "0";
@@ -1327,8 +1443,6 @@
     wrap.appendChild(el("p", "sub",
       G.right === G.answered ? "Clean sweep. The words move up a box." :
       "Missed ones drop to box 1 and come back tomorrow."));
-    var streak = reviewStreak();
-    if (!G.practice && streak > 1) wrap.appendChild(el("p", "sub", streak + "-day review streak — keep the thread."));
     var done = el("button", "b", "Done");
     done.addEventListener("click", closeGame);
     wrap.appendChild(done);
@@ -1438,17 +1552,11 @@
       chips.appendChild(el("span", "tchip", "quiet week so far"));
     }
 
-    var streak = weaveStreak();
-    var wb = $("weaveBadge");
-    wb.hidden = streak < 1;
-    wb.textContent = streak + "-day streak";
-    wb.className = "badge ok";
   }
 
   // ---------- boot ----------
   function renderAll() {
-    var loopsSorted = (DATA.openLoops || []).slice().sort(function (a, b) { return (b.weight || 1) - (a.weight || 1); });
-    renderList($("loopsList"), loopsSorted, { checkable: true, weight: true, emptyText: "No open loops. Rare. Savor it." });
+    renderLoops();
     renderList($("winsList"), DATA.quickWins, { checkable: true, emptyText: "No quick wins queued — ask Claude to pull some from the dump." });
     renderDump();
     renderCounts();
@@ -1463,9 +1571,10 @@
 
   renderHeader();
   setInterval(renderNow, 30000); // keep the countdown honest
-  var boot = token()
+  var bootData = token()
     ? apiFetchData().then(function (r) { REMOTE_SHA = r.sha; return r.json; })
     : fetch("data.json?t=" + Date.now()).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
+  var boot = Promise.all([bootData, fetchExtEvents()]).then(function (rs) { return rs[0]; });
   boot
     .then(function (json) {
       DATA = json;
@@ -1486,7 +1595,11 @@
     });
 
   document.addEventListener("visibilitychange", function () {
-    if (!document.hidden && token() && !load(LS_OPS, []).length) pullFresh();
+    if (document.hidden) return;
+    if (token() && !load(LS_OPS, []).length) pullFresh();
+    fetchExtEvents().then(function () {
+      if (DATA) { renderWeek(); renderNow(); renderTiles(); }
+    });
   });
 
   if ("serviceWorker" in navigator) {

@@ -73,49 +73,57 @@
       "id": "ol-clean6pm",
       "text": "Whole place clean by 6 PM — downstairs + upstairs",
       "weight": 3,
-      "done": false
+      "done": false,
+      "area": "home"
     },
     {
       "id": "ol-demo",
       "text": "Work: complete the demo",
       "weight": 3,
-      "done": false
+      "done": false,
+      "area": "work"
     },
     {
       "id": "ol-pres",
       "text": "Work: presentation completely done",
       "weight": 3,
-      "done": false
+      "done": false,
+      "area": "work"
     },
     {
       "id": "ol-alerts",
       "text": "Work: alerts",
       "weight": 2,
-      "done": false
+      "done": false,
+      "area": "work"
     },
     {
       "id": "ol-watch",
       "text": "Return Apple Watch to eBay (label printed)",
       "weight": 2,
-      "done": false
+      "done": false,
+      "area": "home"
     },
     {
       "id": "ol-mealprep",
       "text": "Decide: cafeteria lunch vs full self-meal-prep",
       "weight": 2,
-      "done": false
+      "done": false,
+      "area": "home"
     },
     {
       "id": "ol-secqa",
       "text": "SEC filings Q&A project — next concrete step on the eval harness",
       "weight": 3,
-      "done": false
+      "done": false,
+      "area": "work"
     },
     {
       "id": "ol-runclub",
       "text": "Pick a run club and actually show up once",
       "weight": 2,
-      "done": false
+      "done": false,
+      "area": "home"
     }
   ],
   "wantToDo": [
