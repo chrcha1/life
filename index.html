@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The Weave</title>
 <meta name="description" content="Christelle's day, sorted. Updated by a daily brain-dump chat with Claude.">
-<meta name="theme-color" content="#1B1713">
+<meta name="theme-color" content="#131110">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -14,21 +14,24 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #1B1713;
-    --card: #241F19;
-    --card-2: #2C261E;
-    --line: #3B3328;
-    --line-soft: rgba(167, 154, 133, 0.16);
-    --text: #EFE7D8;
-    --muted: #A79A85;
-    --faint: #6E6353;
-    --sage: #A8BD8F;
+    --bg: #131110;
+    --card: #1C1916;
+    --card-2: #262119;
+    --line: #363028;
+    --line-soft: rgba(169, 156, 136, 0.14);
+    --text: #F4EDE1;
+    --muted: #A99C88;
+    --faint: #6E6558;
+    --amber: #E8A33D;      /* today / primary / next-up */
+    --clay: #D96C47;       /* heavy / urgent */
+    --sage: #9DB87C;       /* done / vocab / growth */
     --moss: #7E9B6E;
-    --amber: #D9A45B;
-    --clay: #C97B5D;
-    --rust: #A8543A;
-    --sand: #D8C7A5;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 6px 18px rgba(0, 0, 0, 0.18);
+    --rust: #B24A31;
+    --sand: #E4D3AC;
+    --amber-dim: rgba(232, 163, 61, 0.12);
+    --clay-dim: rgba(217, 108, 71, 0.12);
+    --sage-dim: rgba(157, 184, 124, 0.14);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 22px rgba(0, 0, 0, 0.22);
     --display: "Fraunces", Georgia, serif;
     --body: system-ui, -apple-system, "Segoe UI", sans-serif;
     --mono: ui-monospace, "SF Mono", Menlo, monospace;
@@ -38,66 +41,110 @@
   * { box-sizing: border-box; }
   [hidden] { display: none !important; }
 
-  html { background: var(--bg); }
+  html { background: var(--bg); scroll-behavior: smooth; }
 
   body {
     margin: 0;
     font-family: var(--body);
     font-size: 16px;
-    line-height: 1.55;
+    line-height: 1.5;
     color: var(--text);
     background: var(--bg);
     -webkit-font-smoothing: antialiased;
     padding-bottom: env(safe-area-inset-bottom);
   }
 
-  .wrap { max-width: 640px; margin: 0 auto; padding: 26px 18px 40px; }
-
-  /* ---------- header ---------- */
-  header.top { margin: 0 0 22px; }
-  .topline { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-  .wordmark {
-    font-family: var(--display);
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: 0.4px;
-    color: var(--sand);
-    margin: 0;
+  /* ---------- sticky top bar ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 40;
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 10px 18px calc(10px);
+    background: rgba(19, 17, 16, 0.92);
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line-soft);
   }
-  .datebar { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .tb-mark { font-family: var(--display); font-weight: 600; font-size: 14px; letter-spacing: 0.4px; color: var(--sand); }
+  .tb-right { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .tb-sync { background: none; border: 0; cursor: pointer; padding: 4px; font-size: 13px; line-height: 1; }
+  .tb-sync i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--faint); }
+  .tb-sync.on i { background: var(--sage); }
+  .tb-sync.err i { background: var(--clay); }
+
+  .wrap { max-width: 640px; margin: 0 auto; padding: 18px 18px 40px; }
+
+  /* ---------- header: greeting + NOW + tiles ---------- */
   .greeting {
     font-family: var(--display);
-    font-size: 30px;
+    font-size: 21px;
     font-weight: 500;
-    line-height: 1.2;
-    margin: 12px 0 0;
-    min-height: 1.2em;
-  }
-  .greeting .hola { color: var(--sage); transition: opacity 0.6s; }
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-  .chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 5px 12px;
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    font-family: var(--mono);
-    font-size: 12px;
+    margin: 2px 0 14px;
     color: var(--muted);
   }
-  .chip b { color: var(--amber); font-weight: 600; }
-  .chip.sync b { color: var(--sage); }
-  .chip.sync.off b { color: var(--faint); }
-  .chip.sync.err b { color: var(--clay); }
+  .greeting .hola { color: var(--sage); transition: opacity 0.6s; }
+
+  .nowstrip {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--amber-dim);
+    border: 1px solid rgba(232, 163, 61, 0.4);
+    border-left: 4px solid var(--amber);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin: 0 0 14px;
+  }
+  .nowstrip .nw-main { flex: 1; min-width: 0; }
+  .nowstrip .nw-label { font-family: var(--mono); font-size: 10.5px; letter-spacing: 1.6px; color: var(--amber); text-transform: uppercase; margin: 0 0 2px; }
+  .nowstrip .nw-title { font-size: 16px; font-weight: 650; margin: 0; line-height: 1.3; }
+  .nowstrip .nw-time {
+    font-family: var(--mono); font-variant-numeric: tabular-nums;
+    font-size: 24px; font-weight: 600; color: var(--amber); white-space: nowrap;
+  }
+  .nowstrip .nw-time small { display: block; font-size: 10.5px; font-weight: 400; color: var(--muted); text-align: right; letter-spacing: 0.5px; }
+
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 0 0 14px; }
+  a.tile {
+    display: block; text-decoration: none; color: inherit;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 10px 8px 9px;
+    text-align: center;
+  }
+  a.tile:active { background: var(--card-2); }
+  .tile .tv { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 22px; font-weight: 700; line-height: 1.1; }
+  .tile .tl { font-size: 10.5px; letter-spacing: 0.8px; text-transform: uppercase; color: var(--faint); margin-top: 3px; }
+  .tile .tbarwrap { height: 3px; background: var(--card-2); border-radius: 99px; margin: 6px 10px 0; overflow: hidden; }
+  .tile .tbarwrap i { display: block; height: 100%; width: 0; background: var(--sage); border-radius: 99px; transition: width 0.3s; }
+  .tile.hot .tv { color: var(--clay); }
+  .tile.due .tv { color: var(--amber); }
+  .tile.calm .tv { color: var(--sage); }
+  .tile.zero .tv { color: var(--faint); }
+
+  .btnrow { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 22px; }
+  button.b {
+    font-family: var(--body);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #221B12;
+    background: var(--amber);
+    border: 0;
+    border-radius: 10px;
+    padding: 9px 14px;
+    cursor: pointer;
+  }
+  button.b:hover { filter: brightness(1.06); }
+  button.b:active { filter: brightness(0.94); }
+  button.b.green { background: var(--sage); }
+  button.b.ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); font-weight: 500; }
+  button.b.ghost:hover { color: var(--text); border-color: var(--faint); filter: none; }
+  button.b:disabled { opacity: 0.45; cursor: default; }
+  .todaymeta { font-family: var(--mono); font-size: 11.5px; color: var(--faint); margin: -14px 0 20px; }
 
   /* ---------- layout ---------- */
-  .grid { display: grid; gap: 16px; }
+  .grid { display: grid; gap: 14px; }
   @media (min-width: 980px) {
     .wrap { max-width: 1020px; }
     .grid { grid-template-columns: 1fr 1fr; align-items: start; }
-    .col { display: grid; gap: 16px; }
+    .col { display: grid; gap: 14px; }
   }
 
   section.card {
@@ -105,31 +152,31 @@
     border: 1px solid var(--line);
     border-radius: var(--r);
     box-shadow: var(--shadow);
-    padding: 18px;
+    padding: 16px;
+    scroll-margin-top: 58px;
   }
-  .eyebrow { display: flex; align-items: baseline; gap: 9px; margin-bottom: 2px; }
-  .eyebrow h2 {
-    font-family: var(--display);
-    font-size: 17px;
-    font-weight: 600;
-    letter-spacing: 0.2px;
-    margin: 0;
-    color: var(--text);
-  }
-  .eyebrow .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; align-self: center; }
-  .eyebrow .count { margin-left: auto; font-family: var(--mono); font-size: 12px; color: var(--muted); }
-  .sub { color: var(--muted); font-size: 13.5px; margin: 2px 0 12px; }
+  section.card.quiet { background: transparent; box-shadow: none; border-style: dashed; border-color: var(--line); }
 
-  .s-today  .dot { background: var(--amber); }
-  .s-vocab  .dot { background: var(--sage); }
-  .s-loops  .dot { background: var(--clay); }
-  .s-wins   .dot { background: var(--amber); }
-  .s-dump   .dot { background: var(--moss); }
-  .s-cal    .dot { background: var(--sand); }
-  .s-want   .dot { background: var(--rust); }
-  .s-proj   .dot { background: var(--sand); }
-  .s-quest  .dot { background: var(--moss); }
-  .s-weave  .dot { background: linear-gradient(135deg, var(--sage), var(--amber), var(--clay)); }
+  .eyebrow { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; }
+  .eyebrow h2 {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    margin: 0;
+    color: var(--muted);
+  }
+  .badge {
+    font-family: var(--mono); font-variant-numeric: tabular-nums;
+    font-size: 11.5px; font-weight: 600;
+    padding: 2px 8px; border-radius: 99px;
+    background: var(--card-2); color: var(--muted);
+  }
+  .badge.hot { background: var(--clay-dim); color: var(--clay); }
+  .badge.due { background: var(--amber-dim); color: var(--amber); }
+  .badge.ok { background: var(--sage-dim); color: var(--sage); }
+  .eyebrow .spacer { flex: 1; }
+  .sub { color: var(--faint); font-size: 13px; margin: -4px 0 10px; }
 
   /* ---------- lists ---------- */
   ul.items { list-style: none; margin: 0; padding: 0; }
@@ -137,18 +184,18 @@
     display: flex;
     gap: 11px;
     align-items: flex-start;
-    padding: 9px 0;
+    padding: 10px 0;
     border-bottom: 1px solid var(--line-soft);
   }
-  ul.items li:last-child { border-bottom: 0; }
+  ul.items li:last-child { border-bottom: 0; padding-bottom: 2px; }
   ul.items li .txt { flex: 1; font-size: 15px; }
 
   .check {
     appearance: none;
     -webkit-appearance: none;
-    width: 21px; height: 21px;
-    min-width: 21px;
-    margin: 1px 0 0;
+    width: 22px; height: 22px;
+    min-width: 22px;
+    margin: 0;
     background: var(--bg);
     border: 1.5px solid var(--faint);
     border-radius: 7px;
@@ -165,31 +212,43 @@
   }
   li.done .txt { color: var(--faint); text-decoration: line-through; }
 
-  .s-loops li { padding-left: 11px; border-left: 3px solid rgba(201, 123, 93, 0.45); border-radius: 2px; }
-  .s-loops li.w2 { border-left-color: rgba(201, 123, 93, 0.75); }
-  .s-loops li.w3 { border-left-color: var(--clay); border-left-width: 4px; }
+  /* open loops: weight = visual heat */
+  #sec-loops li { padding-left: 12px; border-left: 3px solid var(--line); border-radius: 2px; }
+  #sec-loops li.w2 { border-left-color: rgba(217, 108, 71, 0.55); }
+  #sec-loops li.w3 { border-left-color: var(--clay); border-left-width: 4px; background: linear-gradient(90deg, var(--clay-dim), transparent 55%); }
+  #sec-loops li.w3 .txt { font-weight: 650; font-size: 15.5px; }
+  .wtag { font-family: var(--mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--clay); padding-top: 4px; }
 
-  /* ---------- buttons & inputs ---------- */
-  .btnrow { display: flex; flex-wrap: wrap; gap: 9px; }
-  button.b {
-    font-family: var(--body);
-    font-size: 14px;
-    font-weight: 600;
-    color: #221B12;
-    background: var(--amber);
-    border: 0;
-    border-radius: 10px;
-    padding: 10px 16px;
-    cursor: pointer;
-    transition: filter 0.15s;
-  }
-  button.b:hover { filter: brightness(1.06); }
-  button.b:active { filter: brightness(0.94); }
-  button.b.green { background: var(--sage); }
-  button.b.ghost { background: var(--card-2); color: var(--text); border: 1px solid var(--line); font-weight: 500; }
-  button.b:disabled { opacity: 0.45; cursor: default; }
-  .todaymeta { font-family: var(--mono); font-size: 12px; color: var(--muted); margin: 12px 0 0; }
+  /* wins progress */
+  .winsbar { height: 4px; background: var(--card-2); border-radius: 99px; overflow: hidden; margin: 2px 0 4px; }
+  .winsbar i { display: block; height: 100%; width: 0; background: var(--sage); border-radius: 99px; transition: width 0.3s; }
 
+  /* ---------- week agenda ---------- */
+  .week { list-style: none; margin: 0; padding: 0; }
+  .week li { display: flex; gap: 12px; padding: 8px 8px; border-bottom: 1px solid var(--line-soft); border-radius: 8px; }
+  .week li:last-child { border-bottom: 0; }
+  .week li.today { background: var(--amber-dim); border-bottom-color: transparent; padding: 10px 8px; }
+  .wk-day { min-width: 44px; text-align: center; flex: none; }
+  .wk-day .dw { font-family: var(--mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--faint); }
+  .wk-day .dn { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 17px; font-weight: 600; color: var(--muted); line-height: 1.2; }
+  .week li.today .dw { color: var(--amber); }
+  .week li.today .dn { color: var(--amber); font-size: 19px; }
+  .wk-items { flex: 1; min-width: 0; display: grid; gap: 3px; align-content: center; }
+  .wk-ev { display: flex; gap: 8px; align-items: baseline; font-size: 14px; line-height: 1.35; }
+  .wk-ev .t { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 12px; color: var(--amber); flex: none; min-width: 42px; }
+  .wk-ev.rec .t { color: var(--moss); }
+  .wk-ev.rec .n { color: var(--muted); }
+  .wk-ev.past { opacity: 0.45; }
+  .wk-ev.past .n { text-decoration: line-through; }
+  .wk-none { font-size: 13px; color: var(--faint); }
+  .week li.today .wk-none { color: var(--muted); }
+  .later { margin: 10px 0 0; padding: 8px 8px 0; border-top: 1px solid var(--line-soft); }
+  .later .wk-ev .t { min-width: 58px; }
+
+  /* ---------- vocabulary ---------- */
+  .v-add { display: grid; gap: 8px; margin: 0 0 4px; }
+  .v-add .row2 { display: flex; gap: 8px; }
+  .v-add .row2 input:first-child { flex: 1; }
   input.field {
     font-family: var(--body);
     font-size: 15px;
@@ -201,24 +260,13 @@
     width: 100%;
   }
   input.field::placeholder { color: var(--faint); }
-
-  .jotrow { display: flex; gap: 8px; margin-top: 12px; }
-  .jotrow input { flex: 1; }
-  .xbtn { background: none; border: 0; color: var(--faint); font-family: var(--mono); font-size: 14px; cursor: pointer; padding: 2px 5px; }
-  .xbtn:hover { color: var(--clay); }
-  li.jot .txt::before { content: "jot · "; font-family: var(--mono); font-size: 11px; color: var(--moss); }
-
-  /* ---------- vocabulary ---------- */
-  .v-add { display: grid; gap: 8px; margin: 0 0 4px; }
-  .v-add .row2 { display: flex; gap: 8px; }
-  .v-add .row2 input:first-child { flex: 1; }
-  .v-stats { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0; }
+  .v-stats { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0 2px; }
   ul.v-list { list-style: none; margin: 6px 0 0; padding: 0; }
   ul.v-list li { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line-soft); }
   ul.v-list li:last-child { border-bottom: 0; }
   .v-main { flex: 1; min-width: 0; }
-  .v-word { font-weight: 600; font-size: 15.5px; }
-  .v-due { font-family: var(--mono); font-size: 11px; color: var(--amber); margin-left: 8px; }
+  .v-word { font-weight: 650; font-size: 15.5px; }
+  .v-due { font-family: var(--mono); font-size: 10.5px; color: var(--amber); background: var(--amber-dim); border-radius: 99px; padding: 1px 7px; margin-left: 8px; vertical-align: 1px; }
   .v-def { display: block; color: var(--muted); font-size: 13.5px; margin-top: 1px; }
   .v-note { display: block; color: var(--faint); font-size: 12.5px; font-style: italic; margin-top: 1px; }
   .v-side { display: flex; align-items: center; gap: 10px; flex: none; padding-top: 3px; }
@@ -226,16 +274,57 @@
   .boxdots i { width: 6px; height: 6px; border-radius: 50%; background: var(--line); }
   .boxdots i.on { background: var(--sage); }
   .v-more { margin-top: 10px; }
+  .xbtn { background: none; border: 0; color: var(--faint); font-family: var(--mono); font-size: 14px; cursor: pointer; padding: 2px 5px; }
+  .xbtn:hover { color: var(--clay); }
+
+  /* ---------- brain dump ---------- */
+  .jotrow { display: flex; gap: 8px; margin-top: 12px; }
+  .jotrow input { flex: 1; }
+  li.jot .txt::before { content: "jot · "; font-family: var(--mono); font-size: 11px; color: var(--moss); }
+
+  /* ---------- backburner tabs ---------- */
+  .seg { display: flex; gap: 2px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 3px; margin-bottom: 6px; }
+  .seg button {
+    flex: 1;
+    font-family: var(--body); font-size: 12.5px; font-weight: 600;
+    color: var(--faint);
+    background: transparent; border: 0; border-radius: 8px;
+    padding: 7px 4px; cursor: pointer;
+  }
+  .seg button.on { background: var(--card-2); color: var(--text); }
+
+  /* ---------- weave ---------- */
+  .weavegrid { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 13px); gap: 3px; justify-content: start; overflow-x: auto; padding-bottom: 4px; }
+  .cell { width: 13px; height: 13px; background: var(--card-2); border-radius: 3px; }
+  .cell.t1 { background: rgba(232, 163, 61, 0.32); }
+  .cell.t2 { background: rgba(232, 163, 61, 0.62); }
+  .cell.t3 { background: var(--amber); }
+  .cell.today { outline: 1.5px solid var(--amber); outline-offset: 1px; }
+  .threadchips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+  .tchip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--mono); font-size: 11px; color: var(--muted);
+    background: var(--card-2); border-radius: 99px; padding: 3px 9px;
+  }
+  .tchip i { width: 8px; height: 8px; border-radius: 3px; display: inline-block; }
+  .weavenote { font-size: 12px; color: var(--faint); margin: 10px 0 0; }
+
+  .empty { color: var(--faint); font-size: 14px; padding: 6px 0; }
+
+  footer.note { margin-top: 26px; color: var(--faint); font-size: 12px; }
+  footer.note code { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+
+  a { color: var(--sage); }
+  :focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
 
   /* ---------- modals ---------- */
   .overlay {
     position: fixed; inset: 0;
-    background: rgba(15, 12, 9, 0.78);
+    background: rgba(12, 10, 8, 0.8);
     display: flex; align-items: center; justify-content: center;
     padding: 18px;
     z-index: 50;
   }
-  .overlay[hidden] { display: none; }
   .modal {
     background: var(--card);
     border: 1px solid var(--line);
@@ -249,12 +338,10 @@
   }
   .modal h3 { font-family: var(--display); font-weight: 600; font-size: 18px; margin: 0 0 4px; }
   .modal .close { float: right; }
-
-  /* game */
   .g-bar { height: 5px; background: var(--card-2); border-radius: 99px; overflow: hidden; margin: 12px 0 18px; }
   .g-bar i { display: block; height: 100%; background: var(--sage); border-radius: 99px; transition: width 0.3s; width: 0; }
   .g-prompt-label { font-family: var(--mono); font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin: 0 0 6px; }
-  .g-prompt { font-size: 20px; font-weight: 600; margin: 0 0 16px; }
+  .g-prompt { font-size: 21px; font-weight: 650; margin: 0 0 16px; }
   .g-prompt.def { font-family: var(--display); font-weight: 500; font-size: 18px; line-height: 1.45; }
   .g-opts { display: grid; gap: 8px; }
   .g-opt {
@@ -269,8 +356,8 @@
     cursor: pointer;
   }
   .g-opt:not(:disabled):hover { border-color: var(--faint); }
-  .g-opt.right { border-color: var(--sage); background: rgba(168, 189, 143, 0.14); }
-  .g-opt.wrong { border-color: var(--clay); background: rgba(201, 123, 93, 0.14); }
+  .g-opt.right { border-color: var(--sage); background: var(--sage-dim); }
+  .g-opt.wrong { border-color: var(--clay); background: var(--clay-dim); }
   .g-opt:disabled { cursor: default; }
   .g-feedback { min-height: 22px; font-family: var(--mono); font-size: 13px; margin: 12px 0 0; }
   .g-feedback.ok { color: var(--sage); }
@@ -278,113 +365,73 @@
   .g-next { margin-top: 14px; }
   .g-end { text-align: center; padding: 12px 0 4px; }
   .g-end .big { font-family: var(--display); font-size: 40px; font-weight: 600; color: var(--sage); margin: 6px 0; }
+  .g-end .sub, .g-end .g-prompt-label { margin: 4px 0; }
   .g-reveal { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin: 0 0 14px; color: var(--muted); font-size: 15px; }
-
-  /* settings */
   .set-p { font-size: 13.5px; color: var(--muted); margin: 8px 0; }
   .set-p code { font-family: var(--mono); font-size: 12px; color: var(--sand); }
   .set-row { display: flex; gap: 8px; margin: 12px 0; }
   .set-row input { flex: 1; }
-
-  /* ---------- calendar ---------- */
-  .cal-head { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--mono); font-size: 12px; color: var(--muted); margin-bottom: 8px; }
-  table.cal { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 13px; }
-  table.cal th { color: var(--faint); font-weight: 400; padding: 4px 0; font-size: 11px; }
-  table.cal td { text-align: center; padding: 6px 0; color: var(--text); border-radius: 8px; }
-  table.cal td.dim { color: var(--faint); }
-  table.cal td.today { outline: 1.5px solid var(--amber); outline-offset: -3px; font-weight: 600; }
-  table.cal td .dot { display: block; width: 5px; height: 5px; border-radius: 50%; margin: 2px auto 0; background: var(--amber); }
-  table.cal td .dot.rec { background: var(--moss); opacity: 0.8; }
-  .nextup { margin-top: 12px; }
-  .nextup .nu { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--line-soft); font-size: 14.5px; }
-  .nextup .nu:last-child { border-bottom: 0; }
-  .nextup .nu .d { font-family: var(--mono); font-size: 12px; color: var(--amber); min-width: 76px; padding-top: 2px; }
-
-  /* ---------- weave ---------- */
-  .weavegrid { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 14px); gap: 3px; justify-content: start; overflow-x: auto; padding-bottom: 4px; }
-  .cell { width: 14px; height: 14px; background: var(--bg); border: 1px solid var(--line-soft); border-radius: 3px; display: grid; overflow: hidden; }
-  .cell.today { border-color: var(--amber); }
-  .cell span { display: block; }
-  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
-  .legend i { display: inline-block; width: 9px; height: 9px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
-
-  .empty { color: var(--faint); font-size: 14px; padding: 8px 0; }
-
-  footer.note { margin-top: 28px; color: var(--faint); font-size: 12.5px; }
-  footer.note code { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
-
-  a { color: var(--sage); }
-  :focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+  .modal .btnrow { margin-bottom: 4px; }
 
   @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
     .greeting .hola { transition: none; }
-    .g-bar i { transition: none; }
+    .g-bar i, .tile .tbarwrap i, .winsbar i { transition: none; }
   }
 </style>
 </head>
 <body>
+
+<div class="topbar">
+  <span class="tb-mark">The Weave</span>
+  <span class="tb-right">
+    <span id="datebar"></span>
+    <button class="tb-sync" id="tbSync" aria-label="Sync settings"><i></i></button>
+  </span>
+</div>
+
 <div class="wrap">
 
-  <header class="top">
-    <div class="topline">
-      <p class="wordmark">The Weave</p>
-      <div class="datebar" id="datebar"></div>
+  <h1 class="greeting"><span class="hola" id="hola">Buenos días</span>, Christelle.</h1>
+
+  <div class="nowstrip" id="nowStrip" hidden>
+    <div class="nw-main">
+      <p class="nw-label" id="nowLabel">Next up</p>
+      <p class="nw-title" id="nowTitle"></p>
     </div>
-    <h1 class="greeting"><span class="hola" id="hola">Buenos días</span>, Christelle.</h1>
-    <div class="chips">
-      <span class="chip" id="streakchip" hidden><b id="streakN">0</b><span id="streakLbl">day streak</span></span>
-      <span class="chip sync off" id="syncchip"><b>●</b><span id="syncLbl">local only</span></span>
-    </div>
-  </header>
+    <div class="nw-time"><span id="nowTime"></span><small id="nowSub"></small></div>
+  </div>
+
+  <div class="tiles">
+    <a class="tile" href="#sec-loops" id="tileLoops"><div class="tv" id="tLoopsN">–</div><div class="tl">loops open</div></a>
+    <a class="tile" href="#sec-wins" id="tileWins"><div class="tv" id="tWinsN">–</div><div class="tl">wins</div><div class="tbarwrap"><i id="tWinsBar"></i></div></a>
+    <a class="tile" href="#sec-vocab" id="tileVocab"><div class="tv" id="tVocabN">–</div><div class="tl">words due</div></a>
+    <a class="tile" href="#sec-weave" id="tileStreak"><div class="tv" id="tStreakN">–</div><div class="tl">day streak</div></a>
+  </div>
+
+  <div class="btnrow">
+    <button class="b" id="checkinBtn">Check in with Claude</button>
+    <button class="b ghost" id="copyBtn">Copy check-in</button>
+    <button class="b ghost" id="setBtn">Sync</button>
+  </div>
+  <p class="todaymeta" id="todaymeta"></p>
 
   <div class="grid">
     <div class="col">
 
-      <section class="card s-today">
-        <div class="eyebrow"><span class="dot"></span><h2>Today</h2></div>
-        <p class="sub">Talk it out — quick wins, loops, ideas, whatever. Claude sorts it and reweaves this page.</p>
-        <div class="btnrow">
-          <button class="b" id="checkinBtn">Check in with Claude</button>
-          <button class="b ghost" id="copyBtn">Copy check-in</button>
-          <button class="b ghost" id="setBtn">Sync</button>
-        </div>
-        <p class="todaymeta" id="todaymeta"></p>
-      </section>
-
-      <section class="card s-vocab">
-        <div class="eyebrow"><span class="dot"></span><h2>Vocabulary</h2><span class="count" id="vCount"></span></div>
-        <p class="sub" id="vSub">Words you caught in the wild. Add them here, then play the daily round to make them stick.</p>
-        <div class="v-add">
-          <div class="row2">
-            <input class="field" id="vWord" type="text" placeholder="New word…" autocapitalize="none" autocorrect="off" aria-label="New word">
-            <button class="b green" id="vAddBtn">Add</button>
-          </div>
-          <input class="field" id="vDef" type="text" placeholder="Definition (games work best with one)" aria-label="Definition">
-          <input class="field" id="vNote" type="text" placeholder="Where you saw it (optional)" aria-label="Where you saw it">
-        </div>
-        <div class="v-stats">
-          <button class="b" id="vPlayBtn">Play today’s round</button>
-          <span class="chip" id="vStreak" hidden><b id="vStreakN">0</b><span>day review streak</span></span>
-        </div>
-        <ul class="v-list" id="vList"></ul>
-        <div class="v-more"><button class="b ghost" id="vMoreBtn" hidden>Show all</button></div>
-      </section>
-
-      <section class="card s-loops">
-        <div class="eyebrow"><span class="dot"></span><h2>Open loops</h2><span class="count" id="loopsCount"></span></div>
-        <p class="sub">The stuff humming in the background. Thicker edge, heavier loop. Close one, feel lighter.</p>
+      <section class="card" id="sec-loops">
+        <div class="eyebrow"><h2>Open loops</h2><span class="spacer"></span><span class="badge" id="loopsCount"></span></div>
         <ul class="items" id="loopsList"></ul>
       </section>
 
-      <section class="card s-wins">
-        <div class="eyebrow"><span class="dot"></span><h2>Quick wins</h2><span class="count" id="winsCount"></span></div>
-        <p class="sub">Small, done fast.</p>
+      <section class="card" id="sec-wins">
+        <div class="eyebrow"><h2>Quick wins</h2><span class="spacer"></span><span class="badge" id="winsCount"></span></div>
+        <div class="winsbar"><i id="winsBar"></i></div>
         <ul class="items" id="winsList"></ul>
       </section>
 
-      <section class="card s-dump">
-        <div class="eyebrow"><span class="dot"></span><h2>Brain dump</h2></div>
-        <p class="sub">Yesterday's head, on paper. Jot anything new — it rides along on your next check-in.</p>
+      <section class="card" id="sec-dump">
+        <div class="eyebrow"><h2>Brain dump</h2><span class="spacer"></span><span class="badge" id="dumpCount" hidden></span></div>
         <ul class="items" id="dumpList"></ul>
         <div class="jotrow">
           <input class="field" id="jotInput" type="text" placeholder="Jot a thought…" aria-label="Jot a thought">
@@ -395,41 +442,49 @@
     </div>
     <div class="col">
 
-      <section class="card s-cal">
-        <div class="eyebrow"><span class="dot"></span><h2>Calendar</h2></div>
-        <div class="cal-head"><span id="calMonth"></span><span>amber = event · green = routine</span></div>
-        <table class="cal" id="calTable" aria-label="This month"></table>
-        <div class="nextup" id="nextUp"></div>
-      </section>
-
-      <section class="card s-want">
-        <div class="eyebrow"><span class="dot"></span><h2>I'd like to…</h2></div>
-        <ul class="items" id="wantList"></ul>
-      </section>
-
-      <section class="card s-proj">
-        <div class="eyebrow"><span class="dot"></span><h2>Cool projects</h2></div>
-        <ul class="items" id="projList"></ul>
-      </section>
-
-      <section class="card s-quest">
-        <div class="eyebrow"><span class="dot"></span><h2>Questions to sit with</h2></div>
-        <p class="sub">Bus-commute material. Sit with one, don't rush it.</p>
-        <ul class="items" id="questList"></ul>
-      </section>
-
-      <section class="card s-weave">
-        <div class="eyebrow"><span class="dot"></span><h2>The Weave</h2></div>
-        <p class="sub">One stitch per day you show up. The colors are what you did.</p>
-        <div class="weavegrid" id="weaveGrid"></div>
-        <div class="legend">
-          <span><i style="background:var(--moss)"></i>brain dump</span>
-          <span><i style="background:var(--amber)"></i>quick win</span>
-          <span><i style="background:var(--clay)"></i>loop closed</span>
-          <span><i style="background:var(--rust)"></i>did a want-to</span>
-          <span><i style="background:var(--sand)"></i>project time</span>
-          <span><i style="background:var(--sage)"></i>vocab round</span>
+      <section class="card" id="sec-week">
+        <div class="eyebrow"><h2>This week</h2><span class="spacer"></span><span class="badge" id="weekBadge"></span></div>
+        <ul class="week" id="weekList"></ul>
+        <div class="later" id="laterWrap" hidden>
+          <div class="eyebrow"><h2>Later</h2></div>
+          <div id="laterList"></div>
         </div>
+      </section>
+
+      <section class="card" id="sec-vocab">
+        <div class="eyebrow"><h2>Vocabulary</h2><span class="spacer"></span><span class="badge" id="vCount"></span></div>
+        <p class="sub" id="vSub"></p>
+        <div class="v-stats">
+          <button class="b" id="vPlayBtn">Play today’s round</button>
+          <span class="badge ok" id="vStreak" hidden><span id="vStreakN">0</span>-day review streak</span>
+        </div>
+        <div class="v-add">
+          <div class="row2">
+            <input class="field" id="vWord" type="text" placeholder="New word…" autocapitalize="none" autocorrect="off" aria-label="New word">
+            <button class="b green" id="vAddBtn">Add</button>
+          </div>
+          <input class="field" id="vDef" type="text" placeholder="Definition (games work best with one)" aria-label="Definition">
+          <input class="field" id="vNote" type="text" placeholder="Where you saw it (optional)" aria-label="Where you saw it">
+        </div>
+        <ul class="v-list" id="vList"></ul>
+        <div class="v-more"><button class="b ghost" id="vMoreBtn" hidden>Show all</button></div>
+      </section>
+
+      <section class="card quiet" id="sec-back">
+        <div class="eyebrow"><h2>Backburner</h2></div>
+        <div class="seg" role="tablist">
+          <button id="tabWant" role="tab">I’d like to</button>
+          <button id="tabProj" role="tab">Projects</button>
+          <button id="tabQuest" role="tab">Questions</button>
+        </div>
+        <ul class="items" id="backList"></ul>
+      </section>
+
+      <section class="card quiet" id="sec-weave">
+        <div class="eyebrow"><h2>The Weave</h2><span class="spacer"></span><span class="badge" id="weaveBadge" hidden></span></div>
+        <div class="weavegrid" id="weaveGrid"></div>
+        <div class="threadchips" id="threadChips"></div>
+        <p class="weavenote">One stitch per day you show up — darker means a fuller day. Chips count the last 7 days.</p>
       </section>
 
     </div>
@@ -455,7 +510,7 @@
   <div class="modal" role="dialog" aria-modal="true" aria-label="Sync settings">
     <button class="b ghost close" id="setClose">✕</button>
     <h3>Sync</h3>
-    <p class="set-p">Paste a GitHub token and this device reads &amp; writes <code>data.json</code> in the repo directly — checkboxes, jots-to-come, and every vocab word or game result sync everywhere, instantly.</p>
+    <p class="set-p">Paste a GitHub token and this device reads &amp; writes <code>data.json</code> in the repo directly — checkboxes, vocab words, and game results sync everywhere, instantly.</p>
     <p class="set-p"><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Create a fine-grained token</a>: repository access → <b>only</b> this repo → permissions → Contents: <b>read &amp; write</b>. Nothing else.</p>
     <div class="set-row">
       <input class="field" id="tokenInput" type="password" placeholder="github_pat_…" autocomplete="off" aria-label="GitHub token">
@@ -475,19 +530,26 @@
   // ---------- config ----------
   var OWNER = "chrcha1", REPO = "life", BRANCH = "main";
   var API = "https://api.github.com/repos/" + OWNER + "/" + REPO + "/contents/data.json";
-  var THREADS = {
-    teal: "#7E9B6E",  moss: "#7E9B6E",
-    gold: "#D9A45B",  amber: "#D9A45B",
-    pink: "#C97B5D",  clay: "#C97B5D",
-    orange: "#A8543A", rust: "#A8543A",
-    violet: "#D8C7A5", sand: "#D8C7A5",
-    sage: "#A8BD8F",  vocab: "#A8BD8F"
+  var THREAD_META = {
+    teal:   { label: "brain dump",  color: "#7E9B6E" },
+    moss:   { label: "brain dump",  color: "#7E9B6E" },
+    gold:   { label: "quick win",   color: "#E8A33D" },
+    amber:  { label: "quick win",   color: "#E8A33D" },
+    pink:   { label: "loop closed", color: "#D96C47" },
+    clay:   { label: "loop closed", color: "#D96C47" },
+    orange: { label: "want-to",     color: "#B24A31" },
+    rust:   { label: "want-to",     color: "#B24A31" },
+    violet: { label: "project",     color: "#E4D3AC" },
+    sand:   { label: "project",     color: "#E4D3AC" },
+    sage:   { label: "vocab round", color: "#9DB87C" },
+    vocab:  { label: "vocab round", color: "#9DB87C" }
   };
   var INTERVALS = [1, 2, 4, 7, 14]; // days until next review, per box 1..5
   var LS_CHECKS = "weave.checks.v1";
   var LS_JOTS = "weave.jots.v1";
   var LS_OPS = "weave.ops.v1";
   var LS_TOKEN = "weave.token.v1";
+  var LS_BACKTAB = "weave.backtab.v1";
   var DATA = null;
   var REMOTE_SHA = null;
   var vShowAll = false;
@@ -508,8 +570,13 @@
   function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {} }
   function uid(prefix) { return prefix + "-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
   function token() { try { return localStorage.getItem(LS_TOKEN) || ""; } catch (e) { return ""; } }
+  function el(tag, cls, txt) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (txt !== undefined) e.textContent = txt;
+    return e;
+  }
 
-  // seeded rng so the daily round is the same all day on every device
   function seedFrom(str) {
     var h = 2166136261;
     for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
@@ -619,15 +686,16 @@
   }
 
   function setSync(state, label) {
-    var chip = $("syncchip");
-    chip.className = "chip sync" + (state === "on" ? "" : " " + state);
-    $("syncLbl").textContent = label;
+    var b = $("tbSync");
+    b.className = "tb-sync" + (state === "on" ? " on" : state === "err" ? " err" : "");
+    b.title = label;
+    b.setAttribute("aria-label", "Sync: " + label);
   }
 
   var syncTimer = null, syncing = false;
   function scheduleSync() {
     renderTodayMeta();
-    if (!token()) { setSync("off", "local only — tap Sync"); return; }
+    if (!token()) { setSync("off", "local only — tap to set up sync"); return; }
     clearTimeout(syncTimer);
     syncTimer = setTimeout(syncNow, 1200);
   }
@@ -658,7 +726,6 @@
           return r.json();
         }).then(function (res) {
           REMOTE_SHA = res.content && res.content.sha;
-          // drop only the ops that made it into this write
           var left = load(LS_OPS, []).slice(ops.length);
           save(LS_OPS, left);
           DATA = base;
@@ -693,7 +760,7 @@
   // ---------- header ----------
   function renderHeader() {
     var now = new Date();
-    $("datebar").textContent = now.toLocaleDateString("en-US", { weekday: "short", month: "long", day: "numeric" });
+    $("datebar").textContent = now.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
     var h = now.getHours();
     var slot = h < 12 ? 0 : h < 18 ? 1 : 2;
     var greet = [
@@ -702,31 +769,105 @@
       ["Buenas noches", "Bonsoir", "Good evening"]
     ][slot];
     var i = 0;
-    var el = $("hola");
-    el.textContent = greet[0];
+    var g = $("hola");
+    g.textContent = greet[0];
     if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setInterval(function () {
-        el.style.opacity = 0;
+        g.style.opacity = 0;
         setTimeout(function () {
           i = (i + 1) % greet.length;
-          el.textContent = greet[i];
-          el.style.opacity = 1;
+          g.textContent = greet[i];
+          g.style.opacity = 1;
         }, 600);
       }, 4200);
     }
   }
 
-  // ---------- generic lists ----------
+  // ---------- NOW strip: next timed thing, live countdown ----------
+  function nextTimed() {
+    var now = new Date();
+    var t = todayISO();
+    var cands = [];
+    (DATA.calendar || []).forEach(function (ev) {
+      if (!ev.date || ev.date < t) return;
+      var dt = new Date(ev.date + "T" + (ev.time || "09:00") + ":00");
+      if (dt > now) cands.push({ dt: dt, title: ev.title, timed: !!ev.time });
+    });
+    (DATA.recurring || []).forEach(function (r) {
+      if (!r.time) return;
+      for (var add = 0; add < 7; add++) {
+        var d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + add);
+        if ((r.days || []).indexOf(d.getDay()) !== -1) {
+          var dt = new Date(iso(d) + "T" + r.time + ":00");
+          if (dt > now) { cands.push({ dt: dt, title: r.title, timed: true, rec: true }); break; }
+        }
+      }
+    });
+    cands.sort(function (a, b) { return a.dt - b.dt; });
+    return cands[0];
+  }
+  function renderNow() {
+    if (!DATA) return;
+    var nx = nextTimed();
+    var strip = $("nowStrip");
+    if (!nx) { strip.hidden = true; return; }
+    strip.hidden = false;
+    $("nowTitle").textContent = nx.title;
+    var now = new Date();
+    var sameDay = iso(nx.dt) === todayISO();
+    var mins = Math.round((nx.dt - now) / 60000);
+    if (sameDay && nx.timed) {
+      $("nowLabel").textContent = nx.rec ? "Routine · today" : "Today";
+      $("nowTime").textContent = mins < 1 ? "now" : mins < 60 ? "in " + mins + "m" :
+        "in " + Math.floor(mins / 60) + "h " + pad(mins % 60) + "m";
+      $("nowSub").textContent = "at " + nx.dt.toTimeString().slice(0, 5);
+    } else {
+      $("nowLabel").textContent = "Next up";
+      $("nowTime").textContent = nx.dt.toLocaleDateString("en-US", { weekday: "short" });
+      $("nowSub").textContent = (nx.timed ? nx.dt.toTimeString().slice(0, 5) + " · " : "") +
+        nx.dt.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    }
+  }
+
+  // ---------- tiles ----------
   function isDone(item) {
     var checks = load(LS_CHECKS, {});
     return !!(item.done || checks[item.id]);
   }
+  function weaveStreak() {
+    var byDate = {};
+    (DATA.weave || []).forEach(function (r) { byDate[r.date] = true; });
+    vocab().log.forEach(function (l) { byDate[l.date] = true; });
+    var streak = 0;
+    var cursor = new Date();
+    if (!byDate[todayISO()]) cursor.setDate(cursor.getDate() - 1);
+    while (byDate[iso(cursor)]) { streak++; cursor.setDate(cursor.getDate() - 1); }
+    return streak;
+  }
+  function renderTiles() {
+    var loops = (DATA.openLoops || []).filter(function (l) { return !isDone(l); });
+    var heavy = loops.some(function (l) { return (l.weight || 1) >= 3; });
+    var wins = DATA.quickWins || [];
+    var winsDone = wins.filter(isDone).length;
+    var due = dueWords().length;
+    var streak = weaveStreak();
+
+    $("tLoopsN").textContent = loops.length;
+    $("tileLoops").className = "tile" + (loops.length === 0 ? " calm" : heavy ? " hot" : "");
+    $("tWinsN").textContent = winsDone + "/" + wins.length;
+    $("tWinsBar").style.width = wins.length ? Math.round(100 * winsDone / wins.length) + "%" : "0%";
+    $("tileWins").className = "tile" + (wins.length && winsDone === wins.length ? " calm" : "");
+    $("tVocabN").textContent = due;
+    $("tileVocab").className = "tile" + (due > 0 ? " due" : " zero");
+    $("tStreakN").textContent = streak;
+    $("tileStreak").className = "tile" + (streak > 0 ? " calm" : " zero");
+  }
+
+  // ---------- generic lists ----------
   function renderList(listEl, items, opts) {
     listEl.innerHTML = "";
     if (!items || !items.length) {
-      var em = document.createElement("li");
-      em.className = "empty";
-      em.textContent = opts.emptyText || "Nothing here — tell Claude what belongs.";
+      var em = el("li", "empty", opts.emptyText || "Nothing here — tell Claude what belongs.");
       listEl.appendChild(em);
       return;
     }
@@ -750,18 +891,24 @@
         li.appendChild(cb);
         if (isDone(item)) li.classList.add("done");
       }
-      var span = document.createElement("span");
-      span.className = "txt";
-      span.textContent = item.text;
-      li.appendChild(span);
+      li.appendChild(el("span", "txt", item.text));
+      if (opts.weight && (item.weight || 1) >= 3 && !isDone(item)) li.appendChild(el("span", "wtag", "heavy"));
       listEl.appendChild(li);
     });
   }
   function renderCounts() {
-    var doneW = (DATA.quickWins || []).filter(isDone).length;
-    var doneL = (DATA.openLoops || []).filter(isDone).length;
-    $("winsCount").textContent = doneW + "/" + (DATA.quickWins || []).length;
-    $("loopsCount").textContent = ((DATA.openLoops || []).length - doneL) + " open";
+    var wins = DATA.quickWins || [];
+    var winsDone = wins.filter(isDone).length;
+    var loopsOpen = (DATA.openLoops || []).filter(function (l) { return !isDone(l); }).length;
+    var wc = $("winsCount");
+    wc.textContent = winsDone + " / " + wins.length + " done";
+    wc.className = "badge" + (wins.length && winsDone === wins.length ? " ok" : "");
+    $("winsBar").style.width = wins.length ? Math.round(100 * winsDone / wins.length) + "%" : "0%";
+    var lc = $("loopsCount");
+    lc.textContent = loopsOpen + " open";
+    lc.className = "badge" + (loopsOpen ? " hot" : " ok");
+    renderTiles();
+    renderTodayMeta();
   }
 
   // ---------- brain dump + jots ----------
@@ -770,21 +917,14 @@
     listEl.innerHTML = "";
     (DATA.brainDump || []).forEach(function (item) {
       var li = document.createElement("li");
-      var span = document.createElement("span");
-      span.className = "txt";
-      span.textContent = item.text;
-      li.appendChild(span);
+      li.appendChild(el("span", "txt", item.text));
       listEl.appendChild(li);
     });
     load(LS_JOTS, []).forEach(function (jot, idx) {
       var li = document.createElement("li");
       li.className = "jot";
-      var span = document.createElement("span");
-      span.className = "txt";
-      span.textContent = jot.t;
-      var del = document.createElement("button");
-      del.className = "xbtn";
-      del.textContent = "✕";
+      li.appendChild(el("span", "txt", jot.t));
+      var del = el("button", "xbtn", "✕");
       del.setAttribute("aria-label", "Delete jot");
       del.addEventListener("click", function () {
         var jots = load(LS_JOTS, []);
@@ -793,15 +933,11 @@
         renderDump();
         renderTodayMeta();
       });
-      li.appendChild(span);
       li.appendChild(del);
       listEl.appendChild(li);
     });
     if (!listEl.children.length) {
-      var em = document.createElement("li");
-      em.className = "empty";
-      em.textContent = "Empty head. Enjoy it, or jot something.";
-      listEl.appendChild(em);
+      listEl.appendChild(el("li", "empty", "Empty head. Enjoy it, or jot something."));
     }
   }
   function addJot() {
@@ -847,12 +983,76 @@
     });
   });
   function renderTodayMeta() {
+    if (!DATA) return;
     var n = doneToday().length;
     var j = load(LS_JOTS, []).length;
     var pend = load(LS_OPS, []).length;
     var msg = "today: " + n + " checked · " + j + " jot" + (j === 1 ? "" : "s");
     if (pend && !token()) msg += " · " + pend + " change" + (pend === 1 ? "" : "s") + " waiting for sync";
     $("todaymeta").textContent = msg;
+  }
+
+  // ---------- week agenda ----------
+  function renderWeek() {
+    var listEl = $("weekList");
+    listEl.innerHTML = "";
+    var now = new Date();
+    var t = todayISO();
+    var evByDate = {};
+    (DATA.calendar || []).forEach(function (ev) {
+      if (!evByDate[ev.date]) evByDate[ev.date] = [];
+      evByDate[ev.date].push(ev);
+    });
+    var count = 0;
+    for (var i = 0; i < 7; i++) {
+      var d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i);
+      var dISO = iso(d);
+      var li = document.createElement("li");
+      if (i === 0) li.classList.add("today");
+      var day = el("div", "wk-day");
+      day.appendChild(el("div", "dw", i === 0 ? "today" : d.toLocaleDateString("en-US", { weekday: "short" })));
+      day.appendChild(el("div", "dn", String(d.getDate())));
+      li.appendChild(day);
+      var itemsEl = el("div", "wk-items");
+
+      var evs = (evByDate[dISO] || []).slice().sort(function (a, b) { return (a.time || "99") < (b.time || "99") ? -1 : 1; });
+      evs.forEach(function (ev) {
+        var past = i === 0 && ev.time && (ev.time < now.toTimeString().slice(0, 5));
+        var row = el("div", "wk-ev" + (past ? " past" : ""));
+        row.appendChild(el("span", "t", ev.time || "all day"));
+        row.appendChild(el("span", "n", ev.title));
+        itemsEl.appendChild(row);
+        count++;
+      });
+      (DATA.recurring || []).forEach(function (r) {
+        if ((r.days || []).indexOf(d.getDay()) === -1) return;
+        var past = i === 0 && r.time && (r.time < now.toTimeString().slice(0, 5));
+        var row = el("div", "wk-ev rec" + (past ? " past" : ""));
+        row.appendChild(el("span", "t", r.time || ""));
+        row.appendChild(el("span", "n", r.title));
+        itemsEl.appendChild(row);
+      });
+      if (!itemsEl.children.length) itemsEl.appendChild(el("div", "wk-none", "—"));
+      li.appendChild(itemsEl);
+      listEl.appendChild(li);
+    }
+    $("weekBadge").textContent = count + " event" + (count === 1 ? "" : "s");
+    $("weekBadge").className = "badge" + (count ? " due" : "");
+
+    // beyond the week
+    var horizon = iso(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 6));
+    var later = (DATA.calendar || []).filter(function (ev) { return ev.date > horizon; })
+      .sort(function (a, b) { return a.date < b.date ? -1 : 1; }).slice(0, 4);
+    $("laterWrap").hidden = !later.length;
+    var lw = $("laterList");
+    lw.innerHTML = "";
+    later.forEach(function (ev) {
+      var d = new Date(ev.date + "T00:00:00");
+      var row = el("div", "wk-ev");
+      row.appendChild(el("span", "t", d.toLocaleDateString("en-US", { month: "short", day: "numeric" })));
+      row.appendChild(el("span", "n", (ev.time ? ev.time + " · " : "") + ev.title));
+      lw.appendChild(row);
+    });
   }
 
   // ---------- vocabulary ----------
@@ -875,11 +1075,12 @@
     $("vWord").value = ""; $("vDef").value = ""; $("vNote").value = "";
     $("vWord").focus();
     renderVocab();
+    renderTiles();
   }
   $("vAddBtn").addEventListener("click", addWord);
-  $("vNote").addEventListener("keydown", function (e) { if (e.key === "Enter") addWord(); });
-  $("vDef").addEventListener("keydown", function (e) { if (e.key === "Enter") addWord(); });
-  $("vWord").addEventListener("keydown", function (e) { if (e.key === "Enter") addWord(); });
+  ["vWord", "vDef", "vNote"].forEach(function (id) {
+    $(id).addEventListener("keydown", function (e) { if (e.key === "Enter") addWord(); });
+  });
   $("vMoreBtn").addEventListener("click", function () { vShowAll = !vShowAll; renderVocab(); });
 
   function reviewStreak() {
@@ -896,14 +1097,16 @@
     var words = vocab().words;
     var due = dueWords();
     var t = todayISO();
-    $("vCount").textContent = words.length + " word" + (words.length === 1 ? "" : "s");
+    var vc = $("vCount");
+    vc.textContent = due.length ? due.length + " due · " + words.length + " words" : words.length + " word" + (words.length === 1 ? "" : "s");
+    vc.className = "badge" + (due.length ? " due" : "");
     $("vSub").textContent = words.length
-      ? (due.length ? due.length + " due for review today. Play the round — a few minutes, every day, and they're yours." :
-        "Nothing due today. Add new words, or play a practice round anyway.")
-      : "Words you caught in the wild. Add them here, then play the daily round to make them stick.";
+      ? (due.length ? "A few minutes, every day, and they're yours." : "Nothing due today — add new words, or play a practice round.")
+      : "Words you caught in the wild. Add them, then play the daily round to make them stick.";
     var play = $("vPlayBtn");
     play.disabled = !words.length;
     play.textContent = due.length ? "Play today’s round (" + Math.min(due.length, 12) + ")" : "Practice round";
+    play.className = due.length ? "b" : "b ghost";
 
     var streak = reviewStreak();
     $("vStreak").hidden = streak < 1;
@@ -924,56 +1127,31 @@
     var listEl = $("vList");
     listEl.innerHTML = "";
     if (!words.length) {
-      var em = document.createElement("li");
-      em.className = "empty";
-      em.textContent = "No words yet. Next time one catches your eye, drop it here.";
-      listEl.appendChild(em);
+      listEl.appendChild(el("li", "empty", "No words yet. Next time one catches your eye, drop it here."));
       return;
     }
     shown.forEach(function (w) {
       var li = document.createElement("li");
-      var main = document.createElement("div");
-      main.className = "v-main";
-      var word = document.createElement("span");
-      word.className = "v-word";
-      word.textContent = w.word;
-      main.appendChild(word);
-      if (!w.due || w.due <= t) {
-        var dueTag = document.createElement("span");
-        dueTag.className = "v-due";
-        dueTag.textContent = "due";
-        main.appendChild(dueTag);
-      }
-      if (w.def) {
-        var def = document.createElement("span");
-        def.className = "v-def";
-        def.textContent = w.def;
-        main.appendChild(def);
-      }
-      if (w.note) {
-        var note = document.createElement("span");
-        note.className = "v-note";
-        note.textContent = w.note;
-        main.appendChild(note);
-      }
-      var side = document.createElement("div");
-      side.className = "v-side";
-      var dots = document.createElement("div");
-      dots.className = "boxdots";
+      var main = el("div", "v-main");
+      main.appendChild(el("span", "v-word", w.word));
+      if (!w.due || w.due <= t) main.appendChild(el("span", "v-due", "due"));
+      if (w.def) main.appendChild(el("span", "v-def", w.def));
+      if (w.note) main.appendChild(el("span", "v-note", w.note));
+      var side = el("div", "v-side");
+      var dots = el("div", "boxdots");
       dots.title = "mastery " + (w.box || 1) + "/5";
       for (var i = 1; i <= 5; i++) {
         var dot = document.createElement("i");
         if (i <= (w.box || 1)) dot.className = "on";
         dots.appendChild(dot);
       }
-      var del = document.createElement("button");
-      del.className = "xbtn";
-      del.textContent = "✕";
+      var del = el("button", "xbtn", "✕");
       del.setAttribute("aria-label", "Delete " + w.word);
       del.addEventListener("click", function () {
         if (!confirm("Remove “" + w.word + "”?")) return;
         pushOp({ type: "delWord", id: w.id });
         renderVocab();
+        renderTiles();
       });
       side.appendChild(dots);
       side.appendChild(del);
@@ -984,7 +1162,7 @@
   }
 
   // ---------- the daily game ----------
-  var G = null; // { qs, idx, right, sid, practice }
+  var G = null;
 
   function buildQuestions() {
     var t = todayISO();
@@ -1021,12 +1199,12 @@
   });
   $("gClose").addEventListener("click", closeGame);
   function closeGame() {
-    // count whatever was answered so a half-round still logs the day
     if (G && G.answered && !G.logged) logRound();
     G = null;
     $("gameOverlay").hidden = true;
     renderVocab();
     renderWeave();
+    renderTiles();
   }
   function logRound() {
     if (!G || G.logged) return;
@@ -1040,12 +1218,6 @@
     G.answered = (G.answered || 0) + 1;
     if (correct) G.right++;
     if (!G.practice) pushOp({ type: "result", id: G.qs[G.idx].w.id, correct: correct, date: todayISO() });
-  }
-  function el(tag, cls, txt) {
-    var e = document.createElement(tag);
-    if (cls) e.className = cls;
-    if (txt !== undefined) e.textContent = txt;
-    return e;
   }
   function nextBtn(label) {
     var b = el("button", "b green g-next", label || "Next");
@@ -1152,10 +1324,10 @@
     var wrap = el("div", "g-end");
     wrap.appendChild(el("p", "g-prompt-label", G.practice ? "practice round" : "today's round"));
     wrap.appendChild(el("div", "big", G.right + "/" + G.answered));
-    var streak = reviewStreak();
     wrap.appendChild(el("p", "sub",
       G.right === G.answered ? "Clean sweep. The words move up a box." :
-      "Missed ones drop to box 1 and come back tomorrow." ));
+      "Missed ones drop to box 1 and come back tomorrow."));
+    var streak = reviewStreak();
     if (!G.practice && streak > 1) wrap.appendChild(el("p", "sub", streak + "-day review streak — keep the thread."));
     var done = el("button", "b", "Done");
     done.addEventListener("click", closeGame);
@@ -1164,11 +1336,13 @@
   }
 
   // ---------- sync settings ----------
-  $("setBtn").addEventListener("click", function () {
+  function openSettings() {
     $("tokenInput").value = token() ? "•••••••• (saved)" : "";
     $("tokenStatus").textContent = "";
     $("setOverlay").hidden = false;
-  });
+  }
+  $("setBtn").addEventListener("click", openSettings);
+  $("tbSync").addEventListener("click", openSettings);
   $("setClose").addEventListener("click", function () { $("setOverlay").hidden = true; });
   $("tokenSave").addEventListener("click", function () {
     var v = $("tokenInput").value.trim();
@@ -1187,69 +1361,35 @@
     try { localStorage.removeItem(LS_TOKEN); } catch (e) {}
     $("tokenInput").value = "";
     $("tokenStatus").textContent = "Forgotten. This device is local-only again.";
-    setSync("off", "local only — tap Sync");
+    setSync("off", "local only — tap to set up sync");
   });
 
-  // ---------- calendar ----------
-  function renderCalendar() {
-    var now = new Date();
-    var y = now.getFullYear(), m = now.getMonth();
-    $("calMonth").textContent = now.toLocaleDateString("en-US", { month: "long", year: "numeric" });
-
-    var eventDays = {};
-    (DATA.calendar || []).forEach(function (ev) {
-      var d = new Date(ev.date + "T00:00:00");
-      if (d.getFullYear() === y && d.getMonth() === m) eventDays[d.getDate()] = true;
+  // ---------- backburner ----------
+  var BACK_TABS = {
+    tabWant:  { key: "wantToDo",     empty: "What would be fun? Tell Claude." },
+    tabProj:  { key: "projectIdeas", empty: "No ideas parked. They'll come." },
+    tabQuest: { key: "questions",    empty: "No questions on deck." }
+  };
+  function renderBack() {
+    var current = load(LS_BACKTAB, "tabWant");
+    if (!BACK_TABS[current]) current = "tabWant";
+    Object.keys(BACK_TABS).forEach(function (id) {
+      var b = $(id);
+      b.classList.toggle("on", id === current);
+      b.setAttribute("aria-selected", id === current ? "true" : "false");
+      b.textContent = ({ tabWant: "I’d like to", tabProj: "Projects", tabQuest: "Questions" })[id] +
+        " (" + ((DATA[BACK_TABS[id].key] || []).length) + ")";
     });
-    var recDays = {};
-    (DATA.recurring || []).forEach(function (r) { (r.days || []).forEach(function (dw) { recDays[dw] = true; }); });
-
-    var first = new Date(y, m, 1).getDay();
-    var count = new Date(y, m + 1, 0).getDate();
-    var html = "<tr>" + ["S", "M", "T", "W", "T", "F", "S"].map(function (d) { return "<th>" + d + "</th>"; }).join("") + "</tr><tr>";
-    for (var b = 0; b < first; b++) html += "<td class='dim'></td>";
-    for (var day = 1; day <= count; day++) {
-      var dw = new Date(y, m, day).getDay();
-      if (dw === 0 && day !== 1) html += "</tr><tr>";
-      var cls = day === now.getDate() ? " class='today'" : "";
-      var dots = "";
-      if (eventDays[day]) dots += "<span class='dot'></span>";
-      else if (recDays[dw]) dots += "<span class='dot rec'></span>";
-      html += "<td" + cls + ">" + day + dots + "</td>";
-    }
-    html += "</tr>";
-    $("calTable").innerHTML = html;
-
-    var nu = $("nextUp");
-    nu.innerHTML = "";
-    var horizon = new Date(now.getTime() + 14 * 86400000);
-    var upcoming = (DATA.calendar || []).map(function (ev) {
-      return { ev: ev, d: new Date(ev.date + "T00:00:00") };
-    }).filter(function (x) {
-      return x.d >= new Date(y, m, now.getDate()) && x.d <= horizon;
-    }).sort(function (a, b) { return a.d - b.d; });
-    if (!upcoming.length) {
-      nu.innerHTML = "<div class='empty'>Next two weeks are clear. Tell Claude what's coming.</div>";
-    } else {
-      upcoming.forEach(function (x) {
-        var row = document.createElement("div");
-        row.className = "nu";
-        var d = document.createElement("span");
-        d.className = "d";
-        d.textContent = x.d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
-        var t = document.createElement("span");
-        t.textContent = (x.ev.time ? x.ev.time + " · " : "") + x.ev.title;
-        row.appendChild(d); row.appendChild(t);
-        nu.appendChild(row);
-      });
-    }
+    renderList($("backList"), DATA[BACK_TABS[current].key], { emptyText: BACK_TABS[current].empty });
   }
+  Object.keys(BACK_TABS).forEach(function (id) {
+    $(id).addEventListener("click", function () { save(LS_BACKTAB, id); renderBack(); });
+  });
 
-  // ---------- weave ----------
+  // ---------- weave: sequential density grid + labeled thread chips ----------
   function renderWeave() {
     var byDate = {};
     (DATA.weave || []).forEach(function (r) { byDate[r.date] = (r.threads || []).slice(); });
-    // vocab rounds stitch themselves in
     vocab().log.forEach(function (l) {
       if (!byDate[l.date]) byDate[l.date] = [];
       if (byDate[l.date].indexOf("vocab") === -1) byDate[l.date].push("vocab");
@@ -1263,56 +1403,66 @@
     var t = todayISO();
     for (var d = new Date(start); d <= now; d.setDate(d.getDate() + 1)) {
       var dISO = iso(d);
-      var cell = document.createElement("div");
-      cell.className = "cell" + (dISO === t ? " today" : "");
-      var threads = byDate[dISO];
-      if (threads && threads.length) {
-        cell.title = dISO + " — " + threads.join(", ");
-        threads.slice(0, 3).forEach(function (name) {
-          var s = document.createElement("span");
-          s.style.background = THREADS[name] || THREADS.moss;
-          cell.appendChild(s);
-        });
-      } else {
-        cell.title = dISO;
-      }
+      var threads = byDate[dISO] || [];
+      var lvl = Math.min(threads.length, 3);
+      var cell = el("div", "cell" + (lvl ? " t" + lvl : "") + (dISO === t ? " today" : ""));
+      cell.title = dISO + (threads.length ? " — " + threads.map(function (n) {
+        return (THREAD_META[n] || {}).label || n;
+      }).join(", ") : "");
       grid.appendChild(cell);
     }
     grid.scrollLeft = grid.scrollWidth;
 
-    var streak = 0;
-    var cursor = new Date();
-    if (!byDate[t]) cursor.setDate(cursor.getDate() - 1);
-    while (byDate[iso(cursor)]) { streak++; cursor.setDate(cursor.getDate() - 1); }
-    var chip = $("streakchip");
-    if (streak > 0) {
-      chip.hidden = false;
-      $("streakN").textContent = streak;
-      $("streakLbl").textContent = "day streak";
-    } else if ((DATA.weave || []).length) {
-      chip.hidden = false;
-      $("streakN").textContent = "·";
-      $("streakLbl").textContent = "pick the thread back up";
+    // last-7-days thread chips: color + label together, never color alone
+    var counts = {};
+    for (var i = 0; i < 7; i++) {
+      var dd = iso(new Date(now.getFullYear(), now.getMonth(), now.getDate() - i));
+      (byDate[dd] || []).forEach(function (n) {
+        var m = THREAD_META[n];
+        if (!m) return;
+        counts[m.label] = counts[m.label] || { n: 0, color: m.color };
+        counts[m.label].n++;
+      });
     }
+    var chips = $("threadChips");
+    chips.innerHTML = "";
+    Object.keys(counts).forEach(function (label) {
+      var chip = el("span", "tchip");
+      var dot = document.createElement("i");
+      dot.style.background = counts[label].color;
+      chip.appendChild(dot);
+      chip.appendChild(document.createTextNode(counts[label].n + " × " + label));
+      chips.appendChild(chip);
+    });
+    if (!Object.keys(counts).length) {
+      chips.appendChild(el("span", "tchip", "quiet week so far"));
+    }
+
+    var streak = weaveStreak();
+    var wb = $("weaveBadge");
+    wb.hidden = streak < 1;
+    wb.textContent = streak + "-day streak";
+    wb.className = "badge ok";
   }
 
   // ---------- boot ----------
   function renderAll() {
-    renderList($("loopsList"), DATA.openLoops, { checkable: true, weight: true, emptyText: "No open loops. Rare. Savor it." });
+    var loopsSorted = (DATA.openLoops || []).slice().sort(function (a, b) { return (b.weight || 1) - (a.weight || 1); });
+    renderList($("loopsList"), loopsSorted, { checkable: true, weight: true, emptyText: "No open loops. Rare. Savor it." });
     renderList($("winsList"), DATA.quickWins, { checkable: true, emptyText: "No quick wins queued — ask Claude to pull some from the dump." });
-    renderList($("wantList"), DATA.wantToDo, { emptyText: "What would be fun? Tell Claude." });
-    renderList($("projList"), DATA.projectIdeas, { emptyText: "No ideas parked. They'll come." });
-    renderList($("questList"), DATA.questions, { emptyText: "No questions on deck." });
     renderDump();
     renderCounts();
-    renderTodayMeta();
+    renderNow();
+    renderWeek();
     renderVocab();
-    renderCalendar();
+    renderBack();
     renderWeave();
+    renderTiles();
     $("lastUpdated").textContent = (DATA.meta && DATA.meta.updated) || "—";
   }
 
   renderHeader();
+  setInterval(renderNow, 30000); // keep the countdown honest
   var boot = token()
     ? apiFetchData().then(function (r) { REMOTE_SHA = r.sha; return r.json; })
     : fetch("data.json?t=" + Date.now()).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
@@ -1325,7 +1475,7 @@
         setSync("on", "synced " + new Date().toTimeString().slice(0, 5));
         if (load(LS_OPS, []).length) scheduleSync();
       } else {
-        setSync("off", "local only — tap Sync");
+        setSync("off", "local only — tap to set up sync");
       }
     })
     .catch(function () {
@@ -1335,7 +1485,6 @@
       $("todaymeta").textContent = "Couldn't load data.json — offline? Showing local state.";
     });
 
-  // pull fresh whenever you come back to the tab
   document.addEventListener("visibilitychange", function () {
     if (!document.hidden && token() && !load(LS_OPS, []).length) pullFresh();
   });
