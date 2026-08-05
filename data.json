@@ -1,54 +1,243 @@
 {
   "meta": {
-    "updated": "2026-07-30",
-    "note": "Day 1 starter data drafted by Claude — correct anything in your first check-in."
+    "updated": "2026-08-05",
+    "note": "Rewoven at check-in."
   },
   "calendar": [
-    { "date": "2026-08-01", "title": "(sample event — tell Claude your real ones)" }
+    {
+      "date": "2026-08-05",
+      "time": "18:00",
+      "title": "Deadline: whole place clean, up + down"
+    }
   ],
   "recurring": [
-    { "days": [1, 2, 3, 4, 5], "time": "15:00", "title": "Training block" }
+    {
+      "days": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "time": "15:00",
+      "title": "Training block"
+    }
   ],
   "brainDump": [
-    { "id": "bd-start", "text": "Nothing yet — hit Check in and talk it out." }
+    {
+      "id": "bd-clean",
+      "text": "By 6 PM: the whole place clean — downstairs and upstairs. That's first order of business."
+    },
+    {
+      "id": "bd-work",
+      "text": "Work: demo complete, presentation completely done, then alerts."
+    },
+    {
+      "id": "bd-poster",
+      "text": "Side thing: print the RU pooping poster and put it up on the wall."
+    },
+    {
+      "id": "bd-watch",
+      "text": "Apple Watch goes back to the eBay buyer — label's already printed. Today or tomorrow."
+    }
   ],
   "quickWins": [
-    { "id": "qw-oatmeal", "text": "Stock gym bag with oatmeal packets", "done": false },
-    { "id": "qw-z2log", "text": "Log today's Zone 2 session in the tracker", "done": false },
-    { "id": "qw-jot", "text": "Jot one thing you're avoiding (that's tomorrow's first loop)", "done": false }
+    {
+      "id": "qw-rug-table",
+      "text": "Swap rugs: new rug under the table",
+      "done": false
+    },
+    {
+      "id": "qw-rug-couch",
+      "text": "Other rug under the couch",
+      "done": false
+    },
+    {
+      "id": "qw-bathroom",
+      "text": "Wipe down bathroom — presentable",
+      "done": false
+    },
+    {
+      "id": "qw-livingroom",
+      "text": "Pick up living room: trash out, shoes put up",
+      "done": false
+    },
+    {
+      "id": "qw-poster",
+      "text": "Print the RU pooping poster + hang it",
+      "done": false
+    }
   ],
   "openLoops": [
-    { "id": "ol-mealprep", "text": "Decide: cafeteria lunch vs full self-meal-prep", "weight": 2, "done": false },
-    { "id": "ol-secqa", "text": "SEC filings Q&A project — next concrete step on the eval harness", "weight": 3, "done": false },
-    { "id": "ol-runclub", "text": "Pick a run club and actually show up once", "weight": 2, "done": false }
+    {
+      "id": "ol-clean6pm",
+      "text": "Whole place clean by 6 PM — downstairs + upstairs",
+      "weight": 3,
+      "done": false
+    },
+    {
+      "id": "ol-demo",
+      "text": "Work: complete the demo",
+      "weight": 3,
+      "done": false
+    },
+    {
+      "id": "ol-pres",
+      "text": "Work: presentation completely done",
+      "weight": 3,
+      "done": false
+    },
+    {
+      "id": "ol-alerts",
+      "text": "Work: alerts",
+      "weight": 2,
+      "done": false
+    },
+    {
+      "id": "ol-watch",
+      "text": "Return Apple Watch to eBay (label printed)",
+      "weight": 2,
+      "done": false
+    },
+    {
+      "id": "ol-mealprep",
+      "text": "Decide: cafeteria lunch vs full self-meal-prep",
+      "weight": 2,
+      "done": false
+    },
+    {
+      "id": "ol-secqa",
+      "text": "SEC filings Q&A project — next concrete step on the eval harness",
+      "weight": 3,
+      "done": false
+    },
+    {
+      "id": "ol-runclub",
+      "text": "Pick a run club and actually show up once",
+      "weight": 2,
+      "done": false
+    }
   ],
   "wantToDo": [
-    { "id": "wt-5k", "text": "Train for a 5k" },
-    { "id": "wt-cali", "text": "Get better at calisthenics" },
-    { "id": "wt-af", "text": "Go to an Alliance Française de Seattle event" },
-    { "id": "wt-tinkerers", "text": "Drop into an AI Tinkerers Seattle meetup" },
-    { "id": "wt-hike", "text": "Weekend hike" }
+    {
+      "id": "wt-5k",
+      "text": "Train for a 5k"
+    },
+    {
+      "id": "wt-cali",
+      "text": "Get better at calisthenics"
+    },
+    {
+      "id": "wt-af",
+      "text": "Go to an Alliance Française de Seattle event"
+    },
+    {
+      "id": "wt-tinkerers",
+      "text": "Drop into an AI Tinkerers Seattle meetup"
+    },
+    {
+      "id": "wt-hike",
+      "text": "Weekend hike"
+    }
   ],
   "projectIdeas": [
-    { "id": "pi-itch", "text": "Write up the Nasdaq ITCH order-book reconstructor" },
-    { "id": "pi-pnl", "text": "Next iteration of the live options P&L tracker" },
-    { "id": "pi-mira", "text": "Mira — next release" },
-    { "id": "pi-lexie", "text": "Lexie — sync polish pass" }
+    {
+      "id": "pi-itch",
+      "text": "Write up the Nasdaq ITCH order-book reconstructor"
+    },
+    {
+      "id": "pi-pnl",
+      "text": "Next iteration of the live options P&L tracker"
+    },
+    {
+      "id": "pi-mira",
+      "text": "Mira — next release"
+    },
+    {
+      "id": "pi-lexie",
+      "text": "Lexie — sync polish pass"
+    }
   ],
   "vocab": {
     "words": [
-      { "id": "v-starter1", "word": "halcyon", "def": "calm, peaceful, golden — of a happy period remembered as idyllic", "note": "starter word — delete freely", "added": "2026-07-30", "box": 1, "due": "2026-07-30", "seen": 0, "right": 0 },
-      { "id": "v-starter2", "word": "limn", "def": "to depict or describe in painting or words; to outline in light", "note": "starter word — delete freely", "added": "2026-07-30", "box": 1, "due": "2026-07-30", "seen": 0, "right": 0 },
-      { "id": "v-starter3", "word": "sonder", "def": "the realization that each passerby has a life as vivid and complex as your own", "note": "starter word — delete freely", "added": "2026-07-30", "box": 1, "due": "2026-07-30", "seen": 0, "right": 0 },
-      { "id": "v-starter4", "word": "petrichor", "def": "the earthy smell after rain falls on dry ground", "note": "starter word — delete freely", "added": "2026-07-30", "box": 1, "due": "2026-07-30", "seen": 0, "right": 0 },
-      { "id": "v-starter5", "word": "apricity", "def": "the warmth of the sun in winter", "note": "starter word — delete freely", "added": "2026-07-30", "box": 1, "due": "2026-07-30", "seen": 0, "right": 0 }
+      {
+        "id": "v-starter1",
+        "word": "halcyon",
+        "def": "calm, peaceful, golden — of a happy period remembered as idyllic",
+        "note": "starter word — delete freely",
+        "added": "2026-07-30",
+        "box": 1,
+        "due": "2026-07-30",
+        "seen": 0,
+        "right": 0
+      },
+      {
+        "id": "v-starter2",
+        "word": "limn",
+        "def": "to depict or describe in painting or words; to outline in light",
+        "note": "starter word — delete freely",
+        "added": "2026-07-30",
+        "box": 1,
+        "due": "2026-07-30",
+        "seen": 0,
+        "right": 0
+      },
+      {
+        "id": "v-starter3",
+        "word": "sonder",
+        "def": "the realization that each passerby has a life as vivid and complex as your own",
+        "note": "starter word — delete freely",
+        "added": "2026-07-30",
+        "box": 1,
+        "due": "2026-07-30",
+        "seen": 0,
+        "right": 0
+      },
+      {
+        "id": "v-starter4",
+        "word": "petrichor",
+        "def": "the earthy smell after rain falls on dry ground",
+        "note": "starter word — delete freely",
+        "added": "2026-07-30",
+        "box": 1,
+        "due": "2026-07-30",
+        "seen": 0,
+        "right": 0
+      },
+      {
+        "id": "v-starter5",
+        "word": "apricity",
+        "def": "the warmth of the sun in winter",
+        "note": "starter word — delete freely",
+        "added": "2026-07-30",
+        "box": 1,
+        "due": "2026-07-30",
+        "seen": 0,
+        "right": 0
+      }
     ],
     "log": []
   },
   "questions": [
-    { "id": "q-rider", "text": "Haidt's elephant and rider: is the rider ever really steering, or just narrating?" },
-    { "id": "q-empire", "text": "Sapiens ch. 11: do empires deserve their reputation?" },
-    { "id": "q-imitation", "text": "How did the writers I admire actually use imitation to build a voice?" }
+    {
+      "id": "q-rider",
+      "text": "Haidt's elephant and rider: is the rider ever really steering, or just narrating?"
+    },
+    {
+      "id": "q-empire",
+      "text": "Sapiens ch. 11: do empires deserve their reputation?"
+    },
+    {
+      "id": "q-imitation",
+      "text": "How did the writers I admire actually use imitation to build a voice?"
+    }
   ],
-  "weave": []
+  "weave": [
+    {
+      "date": "2026-08-05",
+      "threads": [
+        "moss"
+      ]
+    }
+  ]
 }
